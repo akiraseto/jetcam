@@ -5,9 +5,37 @@
 
 ## Requirement
 
+### Backend
+
+```bash
+# 映像伝送用アプリケーションのインストール
+$ sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+
+# サンプルプログラムはRubyで書くのでRubyの開発環境をインストール
+$ sudo apt install ruby-dev libssl-dev
+
+# Raspberry PiのピンをRubyで使うためのgemをインストール
+$ sudo gem install pi_piper
+```
+
 
 ## Installation
 
+### Frontend
+```bash
+# install dependencies
+$ npm install
+
+# serve with hot reload at localhost:3000
+$ npm run dev
+
+# build for production and launch server
+$ npm run build
+$ npm run start
+
+# generate static project
+$ npm run generate
+```
 
 ## Usage
 
