@@ -1,19 +1,26 @@
+# todo:最後に外す(リモートデバッグ用コード)
+import pydevd_pycharm
+
+pydevd_pycharm.settrace('192.168.0.7', port=60000, stdoutToServer=True, stderrToServer=True)
+
 import sys
 import os
+import json
+import socket
 
-from backend.peer import Peer
-from backend.config import *
+from config import *
 
+from util import *
+from peer import Peer
+from media import Media
+from data import Data
 
-HOST = "localhost"
-PORT = 8000
 
 def on_open(peer_id, peer_token):
     print('on_open')
 
-    # (video_id, video_ip, video_port) = create_media(true)
+    (video_id, video_ip, video_port) = Media.create_media(True)
     # (data_id, data_ip, data_port) = create_data()
-
 
     p_id = ""
     mc_id = ""
@@ -30,8 +37,6 @@ def on_open(peer_id, peer_token):
 
     # th_connect = listen_connect_event(peer_id, peer_token)
     # set_data_redirect("127.0.0.1", 10000)
-
-
 
 
 if __name__ == '__main__':
@@ -53,28 +58,12 @@ if __name__ == '__main__':
     # 非同期処理
     # (media_connection_id, data_connection_id, process_id) = on_open(peer_id, peer_token)
 
-
-
     exit_flag = True
     while exit_flag:
         input = sys.stdin.readline()
-        if input == "exit":
+        if input.strip() == "exit":
             exit_flag = False
 
     # close_media_connection(media_connection_id)
     # close_peer(peer_id, peer_token)
     # Process.kill(: TERM, process_id)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

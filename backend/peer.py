@@ -2,19 +2,25 @@ import requests
 import json
 import socket
 
+from util import *
+from config import *
+
+
 class Peer():
-    def create_peer(self, key, peer_id):
+    @classmethod
+    def create_peer(cls, key, peer_id):
         params = {
             "key": key,
             "domain": "localhost",
             "turn": False,
             "peer_id": peer_id,
         }
-        res = requests.request("POST", "/peers", data= json.dumps(params))
+        # res = requests.request("POST", "/peers", data= json.dumps(params))
+        res = request("post", "{}/peers".format(HOST), json.dumps(params))
 
         if res:
-            res_body = json.loads(res.body)
-            return res_body["params"]["token"]
+            res_text = json.loads(res.text)
+            return res_text["params"]["token"]
         else:
             print(res)
             exit()

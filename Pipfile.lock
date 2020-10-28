@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "50b8935d42537b1d392d8fe9a921302d58566b8b364c66af879714c0220b4483"
+            "sha256": "34673da0cfd8a47963567718fc8435d52c349d5b7d3330bf34afc7a4ac038820"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -37,6 +37,13 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==2.10"
+        },
+        "pydevd-pycharm": {
+            "hashes": [
+                "sha256:4e13d33d9020eb14157f241fba8ca9c9bdea88bee4bf8c03a516b79117be3278"
+            ],
+            "index": "pypi",
+            "version": "==202.6397.98"
         },
         "requests": {
             "hashes": [
