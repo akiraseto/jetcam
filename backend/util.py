@@ -1,10 +1,20 @@
 import json
 import requests
-import socket
+
+from config import *
 
 
-def request(method_name, uri, *args):
+def request(method_name, _uri, *args):
+    """gatewayにAPIリクエストする
+
+    ----------
+    :param method_name: REST APIメソッド
+    :param _uri: リクエスト先のURI
+    :param args: 主にjson payload
+    :return: gatewayからのレスポンス
+    """
     response = None
+    uri = HOST + _uri
     if method_name == 'get':
         response = requests.get(uri, *args)
     elif method_name ==  'post':
@@ -19,8 +29,9 @@ def request(method_name, uri, *args):
 
     return response
 
+
 def async_get_event(uri, event):
-    # 非同期処理
+    # todo:非同期処理で実装する
     e = None
 
     while e == None or e["event"] != event:
