@@ -30,9 +30,11 @@ class Peer():
         # 非同期
         # async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "OPEN")
 
-    def close_peer(self, peer_id, peer_token):
-        res = requests.request("DELETE", "/peers/{}?token={}".format(peer_id, peer_token))
-        if res:
+    @classmethod
+    def close_peer(cls, peer_id, peer_token):
+        res = request("delete", "{}/peers/{}?token={}".format(HOST, peer_id, peer_token))
+        if res.status_code == 204:
+            print('release peer')
             return None
         else:
             print(res)

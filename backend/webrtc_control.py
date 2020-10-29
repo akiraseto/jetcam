@@ -60,10 +60,10 @@ if __name__ == '__main__':
 
     exit_flag = True
     while exit_flag:
-        input = sys.stdin.readline()
-        if input.strip() == "exit":
+        input_text = input()
+        if input_text == "exit":
             exit_flag = False
 
     # close_media_connection(media_connection_id)
-    # close_peer(peer_id, peer_token)
+    Peer.close_peer(peer_id, peer_token)
     # Process.kill(: TERM, process_id)

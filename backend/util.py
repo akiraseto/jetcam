@@ -11,6 +11,9 @@ def request(method_name, uri, *args):
         response = requests.post(uri, *args)
     elif method_name ==  'put':
         response = requests.put(uri, *args)
+    elif method_name ==  'delete':
+        response = requests.delete(uri)
+
     else:
         print('There is no method called it')
 
