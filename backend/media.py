@@ -1,11 +1,7 @@
-import requests
-import json
-import socket
-
 from util import *
 
 
-class Media():
+class Media:
     """MediaStreamを利用する
 
     MediaConnectionオブジェクトと転送するメディアの送受信方法について指定
@@ -19,6 +15,7 @@ class Media():
         :param is_video: MediaがVideoか指定(falseはAudio)
         :return: media_id, ip_v4, port
         """
+
         params = {
             "is_video": is_video
         }
@@ -34,11 +31,14 @@ class Media():
             return media_id, ip_v4, port
 
         else:
-            print(res)
+            print('Failed creating media port: ', res)
             exit()
 
     @classmethod
     def listen_call_event(cls, peer_id, peer_token):
+        """CALLイベントを待ち受ける
+        """
+
         # todo:非同期で実装する
         e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "CALL")
         media_connection_id = e["call_params"]["media_connection_id"]
@@ -56,6 +56,7 @@ class Media():
         :param video_id:メディアid
         :return:レスポンスのオブジェクト
         """
+
         constraints = {
             "video": True,
             "videoReceiveEnabled": False,
@@ -77,30 +78,22 @@ class Media():
             return json.loads(res.text)
 
         else:
-            print(res)
+            print('Failed answer: ', res)
             exit()
 
-
     @classmethod
-    def listen_stream_event(cls, media_connection_id):
-        # todo:非同期で実装
-        pass
-        # async_get_event("/media/connections/#{}/events".format(media_connection_id), "STREAM")
-
-
-    @classmethod
-    def close_media_connection(cls,media_connection_id):
+    def close_media_connection(cls, media_connection_id):
         """MediaConnectionを解放する
 
         ----------
         :param media_connection_id: MediaConnection特定のid
         :return: None(正常終了)
         """
+
         res = request("delete", "/media/connections/{}".format(media_connection_id))
         if res.status_code == 204:
             print('release media connection')
             return None
         else:
-            print(res)
+            print('Failed closing media connection: ', res)
             exit()
-

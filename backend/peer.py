@@ -1,11 +1,7 @@
-import requests
-import json
-import socket
-
 from util import *
 
 
-class Peer():
+class Peer:
     """SkyWayと接続しセッション管理を行う
 
     """
@@ -20,6 +16,7 @@ class Peer():
         :param key: skywayのAPI KEY
         :param peer_id: 設定したいpeer_id
         """
+
         params = {
             "key": key,
             "domain": "localhost",
@@ -32,12 +29,14 @@ class Peer():
             res_text = json.loads(res.text)
             return res_text["params"]["token"]
         else:
-            print(res)
+            print('Failed creating peer port: ', res)
             exit()
-
 
     @classmethod
     def listen_open_event(cls, peer_id, peer_token):
+        """OPENイベントを待ち受ける
+        """
+
         # todo: 非同期で実装する
         e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "OPEN")
 
@@ -50,16 +49,16 @@ class Peer():
     def close_peer(cls, peer_id, peer_token):
         """Peerオブジェクトの開放処理
 
-        Peerオブジェクトを開放し、関連する全てのWebRTCセッションとデータ受け渡しのためのUDPポートをクローズ
+        Peerオブジェクトを開放し、全てのWebRTCセッションとデータ受け渡しのUDPポートをクローズ
 
         ----------
         :return: None(正常終了)
         """
+
         res = request("delete", "/peers/{}?token={}".format(peer_id, peer_token))
         if res.status_code == 204:
             print('release peer')
             return None
         else:
-            print(res)
+            print('Failed releasing peer: ', res)
             exit()
-

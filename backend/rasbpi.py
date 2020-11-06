@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-# todo:最後に外す(リモートデバッグ用コード)
-# import pydevd_pycharm
-# pydevd_pycharm.settrace('192.168.0.11', port=60000, stdoutToServer=True, stderrToServer=True)
-
-
 import socket
 import RPi.GPIO as GPIO
 
@@ -20,7 +15,6 @@ def pin(message):
         GPIO.output(PNO, GPIO.LOW)
 
 
-
 if __name__ == '__main__':
 
     M_SIZE = 1024
@@ -28,18 +22,17 @@ if __name__ == '__main__':
     host = '0.0.0.0'
     port = 10000
 
-    locaddr = (host, port)
+    loc_addr = (host, port)
 
     # ①ソケットを作成する
     sock = socket.socket(socket.AF_INET, type=socket.SOCK_DGRAM)
     print('create socket')
 
     # ②自ホストで使用するIPアドレスとポート番号を指定
-    sock.bind(locaddr)
+    sock.bind(loc_addr)
 
     while True:
         data = sock.recv(M_SIZE)
         data = data.decode()
         print(data)
         pin(data)
-

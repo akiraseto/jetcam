@@ -13,15 +13,16 @@ def request(method_name, _uri, *args):
     :param args: 主にjson payload
     :return: gatewayからのレスポンス
     """
+
     response = None
     uri = HOST + _uri
     if method_name == 'get':
         response = requests.get(uri, *args)
-    elif method_name ==  'post':
+    elif method_name == 'post':
         response = requests.post(uri, *args)
-    elif method_name ==  'put':
+    elif method_name == 'put':
         response = requests.put(uri, *args)
-    elif method_name ==  'delete':
+    elif method_name == 'delete':
         response = requests.delete(uri)
 
     else:
@@ -31,7 +32,7 @@ def request(method_name, _uri, *args):
 
 
 def async_get_event(uri, event):
-    # todo:非同期処理で実装する
+    # todo:SubThreadで実装する
     e = None
 
     while e is None or e["event"] != event:

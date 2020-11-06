@@ -1,10 +1,7 @@
-import json
-import socket
-
 from util import *
 
 
-class Data():
+class Data:
     """DataChannelを利用する
 
     DataConnectionオブジェクトと転送するデータの送受信方法について指定
@@ -17,6 +14,7 @@ class Data():
         ----------
         :return: data_id, port
         """
+
         res = request("post", "/data", "{}")
         if res.status_code == 201:
             json_text = json.loads(res.text)
@@ -27,12 +25,14 @@ class Data():
             return data_id, ip_v4, port
 
         else:
-            print(res)
+            print('Failed creating data port: ', res)
             exit()
-
 
     @classmethod
     def listen_connect_event(cls, peer_id, peer_token):
+        """CONNECTイベントを待ち受ける
+        """
+
         # todo:非同期で実装
         e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "CONNECTION")
         data_connection_id = e["data_params"]["data_connection_id"]
@@ -41,6 +41,9 @@ class Data():
 
     @classmethod
     def set_data_redirect(cls, data_connection_id, data_id, redirect_addr, redirect_port):
+        """データの転送設定
+        """
+
         params = {
             # for sending data
             "feed_params": {
@@ -56,7 +59,6 @@ class Data():
         res = request("put", "/data/connections/{}".format(data_connection_id), json.dumps(params))
         print(res)
 
-
     @classmethod
     def close_data(cls, data_connection_id):
         """Dataの待受ポートの閉鎖要求を送信
@@ -70,12 +72,5 @@ class Data():
             print('close data')
             return None
         else:
-            print(res)
+            print('Failed closing data connection: ', res)
             exit()
-
-
-
-
-
-
-
