@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 # todo:最後に外す(リモートデバッグ用コード)
-import pydevd_pycharm
-pydevd_pycharm.settrace('192.168.0.7', port=60000, stdoutToServer=True, stderrToServer=True)
+# import pydevd_pycharm
+# pydevd_pycharm.settrace('192.168.0.11', port=60000, stdoutToServer=True, stderrToServer=True)
 
 
 import socket
@@ -11,6 +11,7 @@ import RPi.GPIO as GPIO
 PNO = 21
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PNO, GPIO.OUT)
+
 
 def pin(message):
     if message == 'on':

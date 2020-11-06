@@ -18,12 +18,14 @@ class Data():
         :return: data_id, port
         """
         res = request("post", "/data", "{}")
-        if res:
+        if res.status_code == 201:
             json_text = json.loads(res.text)
             data_id = json_text["data_id"]
             ip_v4 = json_text["ip_v4"]
             port = json_text["port"]
+
             return data_id, ip_v4, port
+
         else:
             print(res)
             exit()
@@ -32,9 +34,10 @@ class Data():
     @classmethod
     def listen_connect_event(cls, peer_id, peer_token):
         # todo:非同期で実装
-        pass
-        # async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "CONNECTION")
+        e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "CONNECTION")
+        data_connection_id = e["data_params"]["data_connection_id"]
 
+        return data_connection_id
 
     @classmethod
     def set_data_redirect(cls, data_connection_id, data_id, redirect_addr, redirect_port):

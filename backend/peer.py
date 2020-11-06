@@ -38,10 +38,13 @@ class Peer():
 
     @classmethod
     def listen_open_event(cls, peer_id, peer_token):
-        pass
         # todo: 非同期で実装する
-        # async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "OPEN")
+        e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "OPEN")
 
+        peer_id = e["params"]["peer_id"]
+        peer_token = e["params"]["token"]
+
+        return peer_id, peer_token
 
     @classmethod
     def close_peer(cls, peer_id, peer_token):

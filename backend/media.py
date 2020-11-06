@@ -12,7 +12,7 @@ class Media():
     """
 
     @classmethod
-    def create_media(cls, is_video):
+    def create_media(cls, is_video=True):
         """Mediaの待受ポート開放要求を送信
 
         ----------
@@ -25,7 +25,7 @@ class Media():
 
         res = request("post", "/media", json.dumps(params))
 
-        if res:
+        if res.status_code == 201:
             json_text = json.loads(res.text)
             media_id = json_text["media_id"]
             ip_v4 = json_text["ip_v4"]
@@ -37,13 +37,13 @@ class Media():
             print(res)
             exit()
 
-
     @classmethod
     def listen_call_event(cls, peer_id, peer_token):
-        # todo:非同期で実装
-        pass
-        # async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "CALL")
+        # todo:非同期で実装する
+        e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "CALL")
+        media_connection_id = e["call_params"]["media_connection_id"]
 
+        return media_connection_id
 
     @classmethod
     def answer(cls, media_connection_id, video_id):
@@ -70,10 +70,10 @@ class Media():
         }
         params = {
             "constraints": constraints,
-            "redirect_params": {}  # 相手側からビデオを受け取らないため、redirectの必要がない
+            "redirect_params": {}  # 相手からビデオを受け取らない
         }
         res = request("post", "/media/connections/{}/answer".format(media_connection_id), json.dumps(params))
-        if res:
+        if res.status_code == 202:
             return json.loads(res.text)
 
         else:

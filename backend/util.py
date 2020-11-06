@@ -34,9 +34,10 @@ def async_get_event(uri, event):
     # todo:非同期処理で実装する
     e = None
 
-    while e == None or e["event"] != event:
+    while e is None or e["event"] != event:
         res = request('get', uri)
 
-        e = json.dumps(res.body)
+        if res.status_code == 200:
+            e = json.loads(res.text)
 
-
+    return e
