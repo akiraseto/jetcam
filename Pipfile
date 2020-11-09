@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 requests = "*"
 pydevd-pycharm = "~=202.6397.94"
+aiohttp = "*"
 
 [requires]
 python_version = "3.5"

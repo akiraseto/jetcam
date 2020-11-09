@@ -35,6 +35,8 @@ class Peer:
     @classmethod
     def listen_open_event(cls, peer_id, peer_token):
         """OPENイベントを待ち受ける
+
+        シグナリングサーバへ正常に接続できたかを確認
         """
 
         # todo: 非同期で実装する
@@ -57,7 +59,7 @@ class Peer:
 
         res = request("delete", "/peers/{}?token={}".format(peer_id, peer_token))
         if res.status_code == 204:
-            print('release peer')
+            print('release peer object')
             return None
         else:
             print('Failed releasing peer: ', res)
