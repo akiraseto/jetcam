@@ -1,97 +1,132 @@
 <template>
   <div class="container">
     <div>
-      <h1 class="title">jetcam</h1>
+      <h1 class="title">
+        jetcam
+      </h1>
       <div class="input">
         <label for="apiKey">API KEY</label>
-        <input type="text" id="apiKey" v-model="apiKey">
-        <b-button v-on:click="establish">peer確立</b-button>
+        <input id="apiKey" v-model="apiKey" type="text">
+        <b-button @click="establish" :class="{ 'btn-success': peer }">
+          Establish
+        </b-button>
+      </div>
+
+      <div v-for="id in peersList" class="target-button">
+        <b-button v-show="id !== peerId" @click="setPartner(id)" :class="{ 'btn-danger': id === targetId }">
+          {{ id }}
+        </b-button>
       </div>
 
       <div class="input">
-        <ul v-for="peer in peersList">
-          <li v-show="peer !== peerId">{{ peer }}</li>
-        </ul>
+        <b-button @click="callOn">
+          Call
+        </b-button>
+        <b-button @click="callOff">
+          Stop
+        </b-button>
       </div>
 
       <div class="input">
-        <label for="target_id_box">接続先PEER ID</label>
-        <input type="text" id="target_id_box" v-model="targetId">
-        <b-button v-on:click="call_button">call</b-button>
+        <label for="chat_box">Message</label>
+        <input id="chat_box" v-model="message" type="text">
+        <b-button @click="sendMessage">
+          send message
+        </b-button>
       </div>
 
-      <div class="input">
-        <label for="chat_box">メッセージ</label>
-        <input type="text" id="chat_box" v-model="message">
-        <b-button v-on:click="chat_button">send message</b-button>
-      </div>
-
-      <video id="remote_video" muted="true" autoplay playsinline="true"></video>
+      <video id="remote_video" muted autoplay playsinline/>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       peer: null,
-      connection: null,
       peerId: 'front',
       apiKey: '',
       peersList: [],
       targetId: '',
       message: '',
+      mediaConnection: null,
+      dataConnection: null,
+      remoteStream: null
     }
   },
 
   methods: {
-    establish() {
+    setPartner (partner_id) {
+      this.targetId = partner_id
+
+    },
+
+    establish () {
       this.peer = new Peer(this.peerId, {
         key: this.apiKey,
         debug: 3
-      });
+      })
 
       this.peer.on('open', (id) => {
-        console.log(id);
+        console.log(id)
 
         this.peer.listAllPeers((peers) => {
-          console.log(peers);
-          this.peersList = peers;
-        });
-      });
+          console.log(peers)
+          this.peersList = peers
+        })
+      })
 
       this.peer.on('error', function (err) {
-        alert(err.message);
-      });
+        alert(err.message)
+      })
     },
 
-    call_button() {
-      const call = this.peer.call(this.targetId, null, {
+    callOn () {
+      this.remoteStream = document.getElementById('remote_video')
+
+      //media streamの接続
+      this.mediaConnection = this.peer.call(this.targetId, null, {
         videoReceiveEnabled: true
-      });
+      })
 
-      call.on('stream', (stream) => {
-        document.getElementById("remote_video").srcObject = stream;
-      });
+      this.mediaConnection.on('stream', (stream) => {
+        this.remoteStream.srcObject = stream
+        // document.getElementById('remote_video').srcObject = stream
 
-      this.connection = this.peer.connect(this.targetId, {
-        serialization: "none"
-      });
-      this.connection.on('data', (data) => {
-        console.log(data);
-      });
+        this.mediaConnection.on('close', () => {
+          console.log('ビデオ通話を切断しました。')
+          this.remoteStream.srcObject.getTracks().forEach(track => track.stop())
+          this.remoteStream.srcObject = null
+          this.mediaConnection = null
+        })
+
+      })
+
+      this.dataConnection = this.peer.connect(this.targetId)
+
+      this.dataConnection.on('open', (data) => {
+        console.log(data)
+
+        this.dataConnection.on('close', () => {
+          console.log('データ通信を切断しました。')
+          this.dataConnection = null
+        })
+
+      })
     },
 
-    chat_button() {
-      console.log(this.message);
-      this.connection.send(this.message);
+    callOff () {
+      this.mediaConnection.close(true)
+      this.dataConnection.close(true)
+      this.targetId = ''
+    },
+
+    sendMessage () {
+      console.log(this.message)
+      this.dataConnection.send(this.message)
     }
-  },
-
-  mounted() {
-
-  },
+  }
 }
 </script>
 
@@ -115,4 +150,18 @@ export default {
 .input {
   margin: 5px;
 }
+
+.red {
+  font-weight: 300;
+  font-size: 100px;
+  color: #ff0000;
+  letter-spacing: 1px;
+}
+
+.target-button {
+  margin: 10px 5px;
+  display: inline-block;
+}
+
+
 </style>
