@@ -33,6 +33,6 @@ if __name__ == '__main__':
 
     while True:
         data = sock.recv(M_SIZE)
-        data = data.decode()
+        data = data.decode(encoding="utf8", errors='ignore')
         print(data)
         pin(data)
