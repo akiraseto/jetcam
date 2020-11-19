@@ -8,18 +8,14 @@ class Data:
     """
 
     @classmethod
-    async def create_data(cls):
+    def create_data(cls):
         """Dataの待受ポート開放要求を送信
 
         ----------
         :return: data_id, port
         """
 
-        print('start create_data')
-        loop = asyncio.get_event_loop()
-
-        # res = request("post", "/data", "{}")
-        res = await loop.run_in_executor(None, request, "post", "/data", "{}")
+        res = request("post", "/data", "{}")
 
         if res.status_code == 201:
             json_text = json.loads(res.text)
@@ -27,7 +23,6 @@ class Data:
             ip_v4 = json_text["ip_v4"]
             port = json_text["port"]
 
-            print('end create_data')
             return data_id, ip_v4, port
 
         else:
@@ -35,17 +30,13 @@ class Data:
             exit()
 
     @classmethod
-    async def listen_connect_event(cls, peer_id, peer_token):
+    async def listen_connect_event(cls, peer_id, peer_token, loop):
         """CONNECTイベントを待ち受ける
         """
 
         print('start listen_connect_event')
-        loop = asyncio.get_event_loop()
-
-        # todo:非同期で実装
-        # e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "CONNECTION")
-        e = await loop.run_in_executor(None, async_get_event, "/peers/{}/events?token={}".format(peer_id, peer_token),
-                                       "CONNECTION")
+        url = "/peers/{}/events?token={}".format(peer_id, peer_token)
+        e = await loop.run_in_executor(None, async_get_event, url, "CONNECTION")
         data_connection_id = e["data_params"]["data_connection_id"]
 
         print('end listen_connect_event')

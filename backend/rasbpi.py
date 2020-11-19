@@ -24,11 +24,11 @@ if __name__ == '__main__':
 
     loc_addr = (host, port)
 
-    # ①ソケットを作成する
+    # ソケット作成
     sock = socket.socket(socket.AF_INET, type=socket.SOCK_DGRAM)
     print('create socket')
 
-    # ②自ホストで使用するIPアドレスとポート番号を指定
+    # 自ホストで使用するIPアドレスとポート番号を指定
     sock.bind(loc_addr)
 
     while True:

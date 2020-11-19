@@ -8,7 +8,7 @@ class Media:
     """
 
     @classmethod
-    async def create_media(cls, is_video=True):
+    def create_media(cls, is_video=True):
         """Mediaの待受ポート開放要求を送信
 
         ----------
@@ -16,15 +16,11 @@ class Media:
         :return: media_id, ip_v4, port
         """
 
-        print('start create_media')
-        loop = asyncio.get_event_loop()
-
         params = {
             "is_video": is_video
         }
 
-        # res = request("post", "/media", json.dumps(params))
-        res = await loop.run_in_executor(None, request, "post", "/media", json.dumps(params))
+        res = request("post", "/media", json.dumps(params))
 
         if res.status_code == 201:
             json_text = json.loads(res.text)
@@ -32,7 +28,6 @@ class Media:
             ip_v4 = json_text["ip_v4"]
             port = json_text["port"]
 
-            print('end create_media')
             return media_id, ip_v4, port
 
         else:
@@ -40,17 +35,14 @@ class Media:
             exit()
 
     @classmethod
-    async def listen_call_event(cls, peer_id, peer_token):
+    async def listen_call_event(cls, peer_id, peer_token, loop):
         """CALLイベントを待ち受ける
         """
 
         print('start listen_call_event')
-        loop = asyncio.get_event_loop()
 
-        # todo:非同期で実装する
-        # e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "CALL")
-        e = await loop.run_in_executor(None, async_get_event, "/peers/{}/events?token={}".format(peer_id, peer_token),
-                                       "CALL")
+        url = "/peers/{}/events?token={}".format(peer_id, peer_token)
+        e = await loop.run_in_executor(None, async_get_event, url, "CALL")
         media_connection_id = e["call_params"]["media_connection_id"]
 
         print('end listen_call_event')

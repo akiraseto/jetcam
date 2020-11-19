@@ -19,10 +19,10 @@
       </div>
 
       <div class="input">
-        <b-button @click="callOn">
+        <b-button @click="callOn" v-bind:disabled=" !targetId">
           Call
         </b-button>
-        <b-button @click="callOff">
+        <b-button @click="callOff" v-bind:disabled=" !mediaConnection">
           Stop
         </b-button>
       </div>
@@ -30,7 +30,7 @@
       <div class="input">
         <label for="chat_box">Message</label>
         <input id="chat_box" v-model="message" type="text">
-        <b-button @click="sendMessage">
+        <b-button @click="sendMessage" v-bind:disabled=" !dataConnection">
           send message
         </b-button>
       </div>
