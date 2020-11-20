@@ -3,7 +3,7 @@ import pydevd_pycharm
 
 pydevd_pycharm.settrace('192.168.0.20', port=60000, stdoutToServer=True, stderrToServer=True)
 
-import sys
+import time
 import subprocess
 
 from util import *
@@ -30,15 +30,21 @@ async def data_build(peer_id, peer_token, data_id, loop):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) <= 1:
-        print("please input peer id")
-        exit()
+    peer_token = Peer.create_peer(API_KEY, PEER_ID)
 
-    peer_id = sys.argv[1]
-    skyway_api_key = API_KEY
+    if peer_token is None:
+        count_create = 1
+        retry_PEER_ID = ''
 
-    peer_token = Peer.create_peer(skyway_api_key, peer_id)
-    peer_id, peer_token = Peer.listen_open_event(peer_id, peer_token)
+        while peer_token is None:
+            time.sleep(5)
+            count_create += 1
+            retry_PEER_ID = PEER_ID + str(count_create)
+            peer_token = Peer.create_peer(API_KEY, retry_PEER_ID)
+
+        PEER_ID = retry_PEER_ID
+
+    peer_id, peer_token = Peer.listen_open_event(PEER_ID, peer_token)
 
     # mediaの準備
     (video_id, video_ip, video_port) = Media.create_media()
@@ -66,11 +72,11 @@ if __name__ == '__main__':
     # todo:接続待受機能を書く:一時後回し
     """
     event listenをマルチスレッド化して、callなど特定のresponseが来たら
-    Queueでスレッドで渡してconnectしょりを書く？
+    Queueでスレッドで渡してconnect処理を書く？
     
     """
 
-    # todo:firebase化する
+    # todo:LEGOと疎通する
 
     # ソケット作成
     robot.make_socket()
@@ -80,6 +86,9 @@ if __name__ == '__main__':
             # Lチカ処理
             data = robot.recv_data()
             data = data.decode(encoding="utf8", errors='ignore')
+
+            if data in SHUTDOWN_LIST:
+                break
             robot.pin(data)
 
     except KeyboardInterrupt:
@@ -90,4 +99,4 @@ if __name__ == '__main__':
     Data.close_data(results['data_connection_id'])
     Peer.close_peer(peer_id, peer_token)
     process_gst.kill()
-    print('terminate!')
+    print('all shutdown!')

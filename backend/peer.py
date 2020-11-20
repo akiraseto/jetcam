@@ -26,11 +26,14 @@ class Peer:
         res = request("post", "/peers", json.dumps(params))
 
         if res:
+            print('Success creating peer port: ', res)
+
             res_text = json.loads(res.text)
             return res_text["params"]["token"]
         else:
             print('Failed creating peer port: ', res)
-            exit()
+            # return res.status_code
+            return None
 
     @classmethod
     def listen_open_event(cls, peer_id, peer_token):

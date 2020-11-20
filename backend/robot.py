@@ -43,8 +43,12 @@ class Robot:
         """データを受け取る受取る
         """
 
-        data = self.sock.recv(self.M_SIZE)
-        return data
+        try:
+            data = self.sock.recv(self.M_SIZE)
+            return data
+        except self.sock.timeout:
+            print('timeout error')
+            self.make_socket()
 
     def close(self):
         GPIO.cleanup()
