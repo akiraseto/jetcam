@@ -1,14 +1,33 @@
 export default {
+  mode: 'universal',
+  target: 'server',
+
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    title: 'frontend',
+    title: 'jetcam',
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' }
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1'
+      },
+      {
+        hid: 'description',
+        name: 'description',
+        content: ''
+      }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      {
+        rel: 'icon',
+        type: 'image/x-icon',
+        href: '/favicon.ico'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://use.fontawesome.com/releases/v5.12.0/css/all.css'
+      }
     ],
     script: [
       { src: '//cdn.webrtc.ecl.ntt.com/skyway-latest.js' }
@@ -37,13 +56,37 @@ export default {
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/firebase',
   ],
+  firebase: {
+    config: {
+      apiKey: 'AIzaSyA5kzqXyrc8prxWSx5X-Z4JuXaaIWEGHkw',
+      authDomain: 'jetcam-skyway.firebaseapp.com',
+      databaseURL: 'https://jetcam-skyway.firebaseio.com',
+      projectId: 'jetcam-skyway',
+      storageBucket: 'jetcam-skyway.appspot.com',
+      messagingSenderId: '644833012165',
+      appId: '1:644833012165:web:8b282b65e212393a1583ac',
+      measurementId: 'G-LSLXTZHJXV'
+    },
+    services: {
+      firestore: true,
+      auth: true,
+    }
+  },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {},
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
-  }
+    //  intelliJ debug
+    extend (config, ctx) {
+      config.devtool = ctx.isClient ? 'eval-source-map' : 'inline-source-map'
+    }
+  },
+  env: {
+    skywayKeyDocPath: 'CbRSBN4smroKSSgK8IXf'
+  },
 }

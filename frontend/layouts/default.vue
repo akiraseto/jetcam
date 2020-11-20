@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Header/>
     <Nuxt />
   </div>
 </template>
@@ -58,5 +59,47 @@ html {
 .button--grey:hover {
   color: #fff;
   background-color: #35495e;
+}
+
+/* common style */
+.title {
+  font-family: 'Quicksand',
+  'Source Sans Pro',
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  Roboto,
+  'Helvetica Neue',
+  Arial,
+  sans-serif;
+  display: block;
+  font-weight: 300;
+  font-size: 100px;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  font-weight: 300;
+  font-size: 42px;
+  word-spacing: 5px;
+  padding-bottom: 15px;
+}
+
+.links {
+  padding-top: 15px;
+}
+
+.footer {
+  padding-top: 15px;
+}
+
+
+/* operator & monitor */
+.container {
+  margin: 0 auto;
+  min-height: 100vh;
+  /*display: flex;*/
+  justify-content: center;
+  text-align: center;
 }
 </style>
