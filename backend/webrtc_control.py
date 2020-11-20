@@ -10,6 +10,9 @@ from util import *
 from peer import Peer
 from media import Media
 from data import Data
+from robot import Robot
+
+robot = Robot()
 
 
 async def media_build(peer_id, peer_token, video_id, loop):
@@ -22,7 +25,7 @@ async def media_build(peer_id, peer_token, video_id, loop):
 async def data_build(peer_id, peer_token, data_id, loop):
     data_connection_id = await Data.listen_connect_event(peer_id, peer_token, loop)
 
-    Data.set_data_redirect(data_connection_id, data_id, "127.0.0.1", 10000)
+    Data.set_data_redirect(data_connection_id, data_id, "127.0.0.1", robot.port)
     return {'data_connection_id': data_connection_id}
 
 
@@ -67,13 +70,24 @@ if __name__ == '__main__':
     
     """
 
-    exit_flag = True
-    while exit_flag:
-        input_text = input()
-        if input_text == "exit":
-            exit_flag = False
+    # todo:firebase化する
 
+    # ソケット作成
+    robot.make_socket()
+
+    try:
+        while True:
+            # Lチカ処理
+            data = robot.recv_data()
+            data = data.decode(encoding="utf8", errors='ignore')
+            robot.pin(data)
+
+    except KeyboardInterrupt:
+        pass
+
+    robot.close()
     Media.close_media_connection(results['media_connection_id'])
     Data.close_data(results['data_connection_id'])
     Peer.close_peer(peer_id, peer_token)
     process_gst.kill()
+    print('terminate!')
