@@ -74,4 +74,10 @@ export default {
 
 <style>
 
+.login {
+  margin: 15px auto;
+  min-width: 150px;
+  width: 30%
+}
+
 </style>
