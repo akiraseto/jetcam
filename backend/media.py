@@ -35,20 +35,6 @@ class Media:
             exit()
 
     @classmethod
-    async def listen_call_event(cls, peer_id, peer_token, loop):
-        """CALLイベントを待ち受ける
-        """
-
-        print('start listen_call_event')
-
-        url = "/peers/{}/events?token={}".format(peer_id, peer_token)
-        e = await loop.run_in_executor(None, async_get_event, url, "CALL")
-        media_connection_id = e["call_params"]["media_connection_id"]
-
-        print('end listen_call_event')
-        return media_connection_id
-
-    @classmethod
     def answer(cls, media_connection_id, video_id):
         """callに応答する
 

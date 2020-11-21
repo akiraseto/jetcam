@@ -46,8 +46,8 @@ class Robot:
         try:
             data = self.sock.recv(self.M_SIZE)
             return data
-        except self.sock.timeout:
-            print('timeout error')
+        except Exception as e:
+            print('socket error:', e)
             self.make_socket()
 
     def close(self):

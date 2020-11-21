@@ -30,19 +30,6 @@ class Data:
             exit()
 
     @classmethod
-    async def listen_connect_event(cls, peer_id, peer_token, loop):
-        """CONNECTイベントを待ち受ける
-        """
-
-        print('start listen_connect_event')
-        url = "/peers/{}/events?token={}".format(peer_id, peer_token)
-        e = await loop.run_in_executor(None, async_get_event, url, "CONNECTION")
-        data_connection_id = e["data_params"]["data_connection_id"]
-
-        print('end listen_connect_event')
-        return data_connection_id
-
-    @classmethod
     def set_data_redirect(cls, data_connection_id, data_id, redirect_addr, redirect_port):
         """データの転送設定
         """
@@ -70,6 +57,7 @@ class Data:
         :param data_connection_id: Dataを特定するためのID
         :return: None(正常終了)
         """
+
         res = request("delete", "/data/connections/{}".format(data_connection_id))
         if res.status_code == 204:
             print('release data connection')

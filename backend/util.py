@@ -43,3 +43,29 @@ def async_get_event(uri, event):
             e = json.loads(res.text)
 
     return e
+
+
+async def listen_event(event, peer_id, peer_token, loop=None):
+    """イベントを待ち受ける
+    """
+
+    print('start listen_event:', event)
+    url = "/peers/{}/events?token={}".format(peer_id, peer_token)
+
+    if event == 'CALL':
+        res = await loop.run_in_executor(None, async_get_event, url, "CALL")
+        print('end listen_call_event')
+        return res["call_params"]["media_connection_id"]
+
+    elif event == 'CONNECTION':
+        res = await loop.run_in_executor(None, async_get_event, url, "CONNECTION")
+        print('end listen_connect_event')
+        return res["data_params"]["data_connection_id"]
+
+    # elif event == 'OPEN':
+    #     res = async_get_event(url, "OPEN")
+    #     # res = await loop.run_in_executor(None, async_get_event, url, "OPEN")
+    #     return res["params"]["peer_id"], res["params"]["token"]
+
+    else:
+        print('event is wrong')

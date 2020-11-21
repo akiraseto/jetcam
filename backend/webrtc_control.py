@@ -16,14 +16,14 @@ robot = Robot()
 
 
 async def media_build(peer_id, peer_token, video_id, loop):
-    media_connection_id = await Media.listen_call_event(peer_id, peer_token, loop)
+    media_connection_id = await listen_event('CALL', peer_id, peer_token, loop)
 
     Media.answer(media_connection_id, video_id)
     return {'media_connection_id': media_connection_id}
 
 
 async def data_build(peer_id, peer_token, data_id, loop):
-    data_connection_id = await Data.listen_connect_event(peer_id, peer_token, loop)
+    data_connection_id = await listen_event('CONNECTION', peer_id, peer_token, loop)
 
     Data.set_data_redirect(data_connection_id, data_id, "127.0.0.1", robot.port)
     return {'data_connection_id': data_connection_id}
@@ -45,6 +45,7 @@ if __name__ == '__main__':
         PEER_ID = retry_PEER_ID
 
     peer_id, peer_token = Peer.listen_open_event(PEER_ID, peer_token)
+    # peer_id, peer_token_ = listen_event('OPEN', PEER_ID, peer_token)
 
     # mediaの準備
     (video_id, video_ip, video_port) = Media.create_media()
