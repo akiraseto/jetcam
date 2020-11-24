@@ -1,3 +1,5 @@
+import json
+
 from util import *
 
 
@@ -35,20 +37,6 @@ class Media:
             exit()
 
     @classmethod
-    async def listen_call_event(cls, peer_id, peer_token, loop):
-        """CALLイベントを待ち受ける
-        """
-
-        print('start listen_call_event')
-
-        url = "/peers/{}/events?token={}".format(peer_id, peer_token)
-        e = await loop.run_in_executor(None, async_get_event, url, "CALL")
-        media_connection_id = e["call_params"]["media_connection_id"]
-
-        print('end listen_call_event')
-        return media_connection_id
-
-    @classmethod
     def answer(cls, media_connection_id, video_id):
         """callに応答する
 
@@ -81,22 +69,23 @@ class Media:
             return json.loads(res.text)
 
         else:
-            print('Failed answer: ', res)
+            print('failed answer: ', res.status_code)
+            print(json.loads(res.text))
             exit()
 
     @classmethod
-    def close_media_connection(cls, media_connection_id):
+    def close_media_connections(cls, media_connection_id):
         """MediaConnectionを解放する
 
         ----------
-        :param media_connection_id: MediaConnection特定のid
-        :return: None(正常終了)
+        :param media_connection_id: MediaConnectionを特定するためのID
+        :return: bool
         """
 
         res = request("delete", "/media/connections/{}".format(media_connection_id))
         if res.status_code == 204:
-            print('release media connection')
-            return None
+            print('release mediaConnection')
+            return True
         else:
-            print('Failed closing media connection: ', res)
-            exit()
+            print('failed closing mediaConnection: ', res)
+            return False

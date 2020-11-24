@@ -1,3 +1,5 @@
+import json
+
 from util import *
 
 
@@ -32,7 +34,6 @@ class Peer:
             return res_text["params"]["token"]
         else:
             print('Failed creating peer port: ', res)
-            # return res.status_code
             return None
 
     @classmethod
@@ -42,11 +43,17 @@ class Peer:
         シグナリングサーバへ正常に接続できたかを確認
         """
 
-        # todo: 非同期で実装する
-        e = async_get_event("/peers/{}/events?token={}".format(peer_id, peer_token), "OPEN")
+        uri = "/peers/{}/events?token={}".format(peer_id, peer_token)
+        res_json = None
 
-        peer_id = e["params"]["peer_id"]
-        peer_token = e["params"]["token"]
+        while res_json is None or res_json["event"] != 'OPEN':
+            res = request('get', uri)
+
+            if res.status_code == 200:
+                res_json = json.loads(res.text)
+
+        peer_id = res_json["params"]["peer_id"]
+        peer_token = res_json["params"]["token"]
 
         return peer_id, peer_token
 

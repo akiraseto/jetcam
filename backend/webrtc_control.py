@@ -5,6 +5,9 @@ pydevd_pycharm.settrace('192.168.0.20', port=60000, stdoutToServer=True, stderrT
 
 import time
 import subprocess
+import queue
+import threading
+import json
 
 from util import *
 from peer import Peer
@@ -15,21 +18,86 @@ from robot import Robot
 robot = Robot()
 
 
-async def media_build(peer_id, peer_token, video_id, loop):
-    media_connection_id = await Media.listen_call_event(peer_id, peer_token, loop)
+def listen_event(peer_id, peer_token, queue):
+    """Peerオブジェクトのイベントを待ち受ける
+    """
 
-    Media.answer(media_connection_id, video_id)
-    return {'media_connection_id': media_connection_id}
+    uri = "/peers/{}/events?token={}".format(peer_id, peer_token)
+    while True:
+        _res = request('get', uri)
+        res = json.loads(_res.text)
+
+        if 'event' not in res.keys():
+            # print('No peer event')
+            pass
+
+        elif res['event'] == 'CALL':
+            print('CALL!')
+            media_connection_id = res["call_params"]["media_connection_id"]
+            queue.put({'media_connection_id': media_connection_id})
+
+            (video_id, video_ip, video_port) = Media.create_media()
+
+            cmd = gst_cmd.format(video_port, video_ip)
+            process_gst = subprocess.Popen(cmd.split())
+            queue.put({'process_gst': process_gst})
+
+            Media.answer(media_connection_id, video_id)
+
+        elif res['event'] == 'CONNECTION':
+            print('CONNECT!')
+            data_connection_id = res["data_params"]["data_connection_id"]
+            queue.put({'data_connection_id': data_connection_id})
+
+            (data_id, data_ip, data_port) = Data.create_data()
+            Data.set_data_redirect(data_connection_id, data_id, "127.0.0.1", robot.port)
+
+        elif res['event'] == 'OPEN':
+            print('OPEN!')
+
+        time.sleep(1)
 
 
-async def data_build(peer_id, peer_token, data_id, loop):
-    data_connection_id = await Data.listen_connect_event(peer_id, peer_token, loop)
+def socket_loop(queue):
+    # ソケット作成
+    robot.make_socket()
 
-    Data.set_data_redirect(data_connection_id, data_id, "127.0.0.1", robot.port)
-    return {'data_connection_id': data_connection_id}
+    while True:
+        data = robot.recv_data()
+        data = data.decode(encoding="utf8", errors='ignore')
+        queue.put({'data': data})
+        robot.pin(data)
+
+
+def listen_media_event(queue, media_connection_id):
+    """MediaConnectionオブジェクトのイベントを待ち受ける
+    """
+
+    uri = "/media/connections/{}/events".format(media_connection_id)
+    while True:
+        _res = request('get', uri)
+        res = json.loads(_res.text)
+
+        if 'event' in res.keys():
+            queue.put({'media_event': res['event']})
+
+            if res['event'] in ['CLOSE', 'ERROR']:
+                break
+
+        else:
+            print('No media_connection event')
+
+        time.sleep(1)
 
 
 if __name__ == '__main__':
+
+    media_connection_id = ''
+    data_connection_id = ''
+    process_gst = None
+    gst_cmd = "gst-launch-1.0 -e v4l2src ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! vp8enc deadline=1  ! rtpvp8pay pt=96 ! udpsink port={} host={} sync=false"
+    SHUTDOWN_LIST = ['バルス', 'ばるす', 'balus', 'balusu', 'barusu', 'barus']
+
     peer_token = Peer.create_peer(API_KEY, PEER_ID)
 
     if peer_token is None:
@@ -46,57 +114,51 @@ if __name__ == '__main__':
 
     peer_id, peer_token = Peer.listen_open_event(PEER_ID, peer_token)
 
-    # mediaの準備
-    (video_id, video_ip, video_port) = Media.create_media()
+    queue = queue.Queue()
+    thread_listen_event = threading.Thread(target=listen_event, args=(peer_id, peer_token, queue))
+    thread_listen_event.setDaemon(True)
+    thread_listen_event.start()
 
-    cmd = "gst-launch-1.0 -e v4l2src ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! vp8enc deadline=1  ! rtpvp8pay pt=96 ! udpsink port={} host={} sync=false".format(
-        video_port, video_ip)
-    process_gst = subprocess.Popen(cmd.split())
+    thread_socket = threading.Thread(target=socket_loop, args=(queue,))
+    thread_socket.setDaemon(True)
+    thread_socket.start()
 
-    # dataの準備
-    (data_id, data_ip, data_port) = Data.create_data()
-
-    # EVENT LOOP
-    loop = asyncio.get_event_loop()
-    done, pending = loop.run_until_complete(asyncio.wait([
-        media_build(peer_id, peer_token, video_id, loop),
-        data_build(peer_id, peer_token, data_id, loop)
-    ]))
-
-    results = {}
-    for result in done:
-        results.update(result.result())
-
-    loop.close()
-
-    # todo:接続待受機能を書く:一時後回し
-    """
-    event listenをマルチスレッド化して、callなど特定のresponseが来たら
-    Queueでスレッドで渡してconnect処理を書く？
-    
-    """
-
-    # todo:LEGOと疎通する
-
-    # ソケット作成
-    robot.make_socket()
+    # todo:1 リファクタリングする
+    # todo:2 LEGOと疎通する
 
     try:
         while True:
-            # Lチカ処理
-            data = robot.recv_data()
-            data = data.decode(encoding="utf8", errors='ignore')
+            results = queue.get()
+            print(results)
 
-            if data in SHUTDOWN_LIST:
-                break
-            robot.pin(data)
+            if 'data' in results.keys():
+                if results['data'] in SHUTDOWN_LIST:
+                    break
+
+            elif 'media_connection_id' in results.keys():
+                media_connection_id = results['media_connection_id']
+
+                thread_media_event = threading.Thread(target=listen_media_event, args=(queue, media_connection_id))
+                thread_media_event.setDaemon(True)
+                thread_media_event.start()
+
+            elif 'process_gst' in results.keys():
+                process_gst = results['process_gst']
+
+            elif 'data_connection_id' in results.keys():
+                data_connection_id = results['data_connection_id']
+
+            elif 'media_event' in results.keys():
+                if results['media_event'] in ['CLOSE', 'ERROR']:
+                    process_gst.kill()
+                    Media.close_media_connections(media_connection_id)
+                    Data.close_data_connections(data_connection_id)
+
 
     except KeyboardInterrupt:
         pass
 
     robot.close()
-    Media.close_media_connection(results['media_connection_id'])
-    Data.close_data(results['data_connection_id'])
     Peer.close_peer(peer_id, peer_token)
     process_gst.kill()
     print('all shutdown!')

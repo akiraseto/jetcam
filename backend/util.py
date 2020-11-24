@@ -1,6 +1,4 @@
-import json
 import requests
-import asyncio
 
 from config import *
 
@@ -30,16 +28,3 @@ def request(method_name, _uri, *args):
         print('There is no method called it')
 
     return response
-
-
-def async_get_event(uri, event):
-    # todo:SubThreadで実装する
-    e = None
-
-    while e is None or e["event"] != event:
-        res = request('get', uri)
-
-        if res.status_code == 200:
-            e = json.loads(res.text)
-
-    return e

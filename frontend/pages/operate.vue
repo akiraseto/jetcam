@@ -122,8 +122,11 @@ export default {
     },
 
     callOff () {
-      this.mediaConnection.close(true)
-      this.dataConnection.close(true)
+      this.peer.destroy()
+      this.peer = null
+
+      // this.mediaConnection.close(true)
+      // this.dataConnection.close(true)
       this.targetId = ''
     },
 

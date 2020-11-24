@@ -5,6 +5,16 @@
 
 ## Requirement
 
+### gateway_linux_arm
+
+[不具合と疑われる仕様あり](https://support.skyway.io/hc/ja/community/posts/360047020193-%E8%A7%A3%E6%94%BE%E3%81%95%E3%82%8C%E3%81%9Fvideo-id%E3%82%92%E4%BD%BF%E7%94%A8%E6%99%82%E3%81%AB%E3%82%AF%E3%83%A9%E3%83%83%E3%82%B7%E3%83%A5)  
+
+[ダウンロード v0.3.2](https://github.com/skyway/skyway-webrtc-gateway/releases/tag/0.3.2)  
+
+クラッシュすることは無くなったが、上記v0.3.2を使用してもmedia connectionを完全に開放できていない仕様の疑いがある。2回目新たにmedia connectionを作成しようとすると、400エラーにより作成できない。  
+そのため、通常flowでの処理ではない実装の検討が必要
+
+
 ### Backend
 
 ```bash
