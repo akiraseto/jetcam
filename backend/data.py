@@ -1,3 +1,5 @@
+import json
+
 from util import *
 
 
@@ -50,18 +52,18 @@ class Data:
         print(res)
 
     @classmethod
-    def close_data(cls, data_connection_id):
-        """Dataの待受ポートの閉鎖要求を送信
+    def close_data_connections(cls, data_connection_id):
+        """DataConnectionを開放する
 
         ----------
-        :param data_connection_id: Dataを特定するためのID
-        :return: None(正常終了)
+        :param data_connection_id: DataConnectionを特定するためのID
+        :return: bool
         """
 
         res = request("delete", "/data/connections/{}".format(data_connection_id))
         if res.status_code == 204:
-            print('release data connection')
-            return None
+            print('release dataConnection')
+            return True
         else:
-            print('Failed closing data connection: ', res)
-            exit()
+            print('Failed closing dataConnection: ', res)
+            return False

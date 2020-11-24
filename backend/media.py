@@ -1,3 +1,5 @@
+import json
+
 from util import *
 
 
@@ -67,22 +69,23 @@ class Media:
             return json.loads(res.text)
 
         else:
-            print('Failed answer: ', res)
+            print('failed answer: ', res.status_code)
+            print(json.loads(res.text))
             exit()
 
     @classmethod
-    def close_media_connection(cls, media_connection_id):
+    def close_media_connections(cls, media_connection_id):
         """MediaConnectionを解放する
 
         ----------
-        :param media_connection_id: MediaConnection特定のid
-        :return: None(正常終了)
+        :param media_connection_id: MediaConnectionを特定するためのID
+        :return: bool
         """
 
         res = request("delete", "/media/connections/{}".format(media_connection_id))
         if res.status_code == 204:
-            print('release media connection')
-            return None
+            print('release mediaConnection')
+            return True
         else:
-            print('Failed closing media connection: ', res)
-            exit()
+            print('failed closing mediaConnection: ', res)
+            return False
