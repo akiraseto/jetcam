@@ -18,7 +18,8 @@
     "bootstrap-vue": "^2.17.3",
     "core-js": "^3.6.5",
     "firebase": "^8.0.2",
-    "nuxt": "^2.14.6"
+    "nuxt": "^2.14.6",
+    "skyway-js": "^4.1.1"
   },
   "devDependencies": {
     "@nuxt/types": "^2.14.7",

@@ -42,14 +42,13 @@ export const actions = {
   },
 
   getSkywayKey ({ commit }) {
-    const docPath = process.env.skywayKeyDocPath
-    this.$fire.firestore.collection('apis').doc(docPath).get()
+    this.$fire.firestore.collection('apis').doc('skyway').get()
       .then(doc => {
         if (!doc.exists) {
           console.log('firebase no document: not get skyway key')
         } else {
           const key = doc.data()
-          commit('getSkywayKey', key['skyway_key'])
+          commit('getSkywayKey', key['key'])
         }
       }).catch(err => {
       console.log('firebase Error', err)

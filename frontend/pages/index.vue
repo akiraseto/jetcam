@@ -3,14 +3,13 @@
     <div>
       <ProjectTitle/>
       <Login/>
-      <!--      <div class="links" v-if="user.login">-->
-      <!--        <nuxt-link to="/operate">-->
-      <!--          <b-button>-->
-      <!--            <div>スタート</div>-->
-      <!--          </b-button>-->
-      <!--        </nuxt-link>-->
-      <!--      </div>-->
-
+      <div class="links" v-if="user.login">
+        <nuxt-link to="/operate">
+          <b-button>
+            <div>スタート</div>
+          </b-button>
+        </nuxt-link>
+      </div>
     </div>
   </div>
 </template>

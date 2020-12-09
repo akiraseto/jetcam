@@ -30,7 +30,8 @@ export default {
       }
     ],
     script: [
-      { src: '//cdn.webrtc.ecl.ntt.com/skyway-latest.js' }
+      //npmでSDKインストールしていればCDNは不要
+      // { src: '//cdn.webrtc.ecl.ntt.com/skyway-latest.js' }
     ]
   },
 
@@ -60,6 +61,9 @@ export default {
     '@nuxtjs/firebase',
   ],
   firebase: {
+    //各自のFirebase設定を入力
+    //Firestoreルールで読み書きをAuth権限設定は必須
+    //晒してもセキュリティ上問題ない。(__/firebase/init.js:全サイト閲覧可能)
     config: {
       apiKey: 'AIzaSyA5kzqXyrc8prxWSx5X-Z4JuXaaIWEGHkw',
       authDomain: 'jetcam-skyway.firebaseapp.com',
@@ -87,6 +91,6 @@ export default {
     }
   },
   env: {
-    skywayKeyDocPath: 'CbRSBN4smroKSSgK8IXf'
+    peerId: 'front'
   },
 }

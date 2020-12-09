@@ -37,12 +37,14 @@
 </template>
 
 <script>
+import Peer from 'skyway-js'
+
 export default {
   middleware: 'authenticated',
   data () {
     return {
       peer: null,
-      peerId: 'front',
+      peerId: process.env.peerId,
       peersList: [],
       targetId: '',
       message: '',
@@ -68,7 +70,6 @@ export default {
     },
     establish () {
       this.peer = new Peer(this.peerId, {
-        // key: this.apiKey,
         key: this.skywayKey,
         debug: 3
       })
@@ -97,7 +98,6 @@ export default {
 
       this.mediaConnection.on('stream', (stream) => {
         this.remoteStream.srcObject = stream
-        // document.getElementById('remote_video').srcObject = stream
 
         this.mediaConnection.on('close', () => {
           console.log('ビデオ通話を切断しました。')
@@ -125,8 +125,6 @@ export default {
       this.peer.destroy()
       this.peer = null
 
-      // this.mediaConnection.close(true)
-      // this.dataConnection.close(true)
       this.targetId = ''
     },
 
@@ -155,6 +153,5 @@ export default {
   margin: 10px 5px;
   display: inline-block;
 }
-
 
 </style>
