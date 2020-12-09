@@ -1,6 +1,6 @@
 import requests
 
-from config import *
+import config
 
 
 def request(method_name, _uri, *args):
@@ -14,7 +14,7 @@ def request(method_name, _uri, *args):
     """
 
     response = None
-    uri = HOST + _uri
+    uri = config.HOST + _uri
     if method_name == 'get':
         response = requests.get(uri, *args)
     elif method_name == 'post':

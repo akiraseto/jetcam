@@ -1,4 +1,3 @@
-from util import *
 import socket
 import RPi.GPIO as GPIO
 
@@ -23,7 +22,6 @@ class Robot:
         """GPIOピンに伝達
         """
 
-        print(data)
         if data == 'on':
             GPIO.output(self.PNO, GPIO.HIGH)
         elif data == 'off':

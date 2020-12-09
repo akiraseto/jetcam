@@ -1,19 +1,20 @@
-# todo:最後に外す(リモートデバッグ用コード)
-import pydevd_pycharm
-
-pydevd_pycharm.settrace('192.168.0.20', port=60000, stdoutToServer=True, stderrToServer=True)
-
 import time
 import subprocess
 import queue
 import threading
 import json
 
-from util import *
+from util import request
 from peer import Peer
 from media import Media
 from data import Data
 from robot import Robot
+import config
+
+# リモートデバッグ用モジュール
+import pydevd_pycharm
+
+pydevd_pycharm.settrace('192.168.0.20', port=60000, stdoutToServer=True, stderrToServer=True)
 
 robot = Robot()
 
@@ -85,20 +86,21 @@ def listen_media_event(queue, media_connection_id):
                 break
 
         else:
-            print('No media_connection event')
+            # print('No media_connection event')
+            pass
 
         time.sleep(1)
 
 
 if __name__ == '__main__':
 
+    peer_id = config.PEER_ID
     media_connection_id = ''
     data_connection_id = ''
     process_gst = None
     gst_cmd = "gst-launch-1.0 -e v4l2src ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! vp8enc deadline=1  ! rtpvp8pay pt=96 ! udpsink port={} host={} sync=false"
-    SHUTDOWN_LIST = ['バルス', 'ばるす', 'balus', 'balusu', 'barusu', 'barus']
 
-    peer_token = Peer.create_peer(API_KEY, PEER_ID)
+    peer_token = Peer.create_peer(config.API_KEY, peer_id)
 
     if peer_token is None:
         count_create = 1
@@ -107,12 +109,12 @@ if __name__ == '__main__':
         while peer_token is None:
             time.sleep(5)
             count_create += 1
-            retry_PEER_ID = PEER_ID + str(count_create)
-            peer_token = Peer.create_peer(API_KEY, retry_PEER_ID)
+            retry_PEER_ID = peer_id + str(count_create)
+            peer_token = Peer.create_peer(config.API_KEY, retry_PEER_ID)
 
-        PEER_ID = retry_PEER_ID
+        peer_id = retry_PEER_ID
 
-    peer_id, peer_token = Peer.listen_open_event(PEER_ID, peer_token)
+    peer_id, peer_token = Peer.listen_open_event(peer_id, peer_token)
 
     queue = queue.Queue()
     thread_listen_event = threading.Thread(target=listen_event, args=(peer_id, peer_token, queue))
@@ -123,16 +125,13 @@ if __name__ == '__main__':
     thread_socket.setDaemon(True)
     thread_socket.start()
 
-    # todo:1 リファクタリングする
-    # todo:2 LEGOと疎通する
-
     try:
         while True:
             results = queue.get()
             print(results)
 
             if 'data' in results.keys():
-                if results['data'] in SHUTDOWN_LIST:
+                if results['data'] in config.SHUTDOWN_LIST:
                     break
 
             elif 'media_connection_id' in results.keys():
@@ -153,7 +152,6 @@ if __name__ == '__main__':
                     process_gst.kill()
                     Media.close_media_connections(media_connection_id)
                     Data.close_data_connections(data_connection_id)
-
 
     except KeyboardInterrupt:
         pass

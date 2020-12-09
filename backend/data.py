@@ -1,6 +1,6 @@
 import json
 
-from util import *
+from util import request
 
 
 class Data:

@@ -216,4 +216,3 @@ sw.*
 # Vim swap files
 *.swp
 /backend/config.py
-/backend/old
