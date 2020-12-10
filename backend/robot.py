@@ -48,6 +48,18 @@ class Robot:
             print('socket error:', e)
             self.make_socket()
 
-    def close(self):
+    def socket_loop(self, queue):
+        """ソケット通信を待ち受ける
+        """
+
+        self.make_socket()
+        while True:
+            data = self.recv_data()
+            data = data.decode(encoding="utf8", errors='ignore')
+            queue.put({'data': data})
+            self.pin(data)
+
+    @staticmethod
+    def close():
         GPIO.cleanup()
         print('GPIO clean up')

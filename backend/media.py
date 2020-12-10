@@ -1,4 +1,5 @@
 import json
+import time
 
 from util import request
 
@@ -64,7 +65,8 @@ class Media:
             "constraints": constraints,
             "redirect_params": {}  # 相手からビデオを受け取らない
         }
-        res = request("post", "/media/connections/{}/answer".format(media_connection_id), json.dumps(params))
+        res = request("post", "/media/connections/{}/answer".format(
+            media_connection_id), json.dumps(params))
         if res.status_code == 202:
             return json.loads(res.text)
 
@@ -72,6 +74,28 @@ class Media:
             print('failed answer: ', res.status_code)
             print(json.loads(res.text))
             exit()
+
+    @classmethod
+    def listen_media_event(cls, queue, media_connection_id):
+        """MediaConnectionオブジェクトのイベントを待ち受ける
+        """
+
+        uri = "/media/connections/{}/events".format(media_connection_id)
+        while True:
+            _res = request('get', uri)
+            res = json.loads(_res.text)
+
+            if 'event' in res.keys():
+                queue.put({'media_event': res['event']})
+
+                if res['event'] in ['CLOSE', 'ERROR']:
+                    break
+
+            else:
+                # print('No media_connection event')
+                pass
+
+            time.sleep(1)
 
     @classmethod
     def close_media_connections(cls, media_connection_id):
