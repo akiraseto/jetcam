@@ -20,7 +20,7 @@ SkyWayとRaspberryPi(以下:ラズパイ)を利用したリモートカメラシ
 - ラズパイ側(backend): Pythonにて構築
 
 
-###ラズパイ
+### ラズパイ
 実行環境
 - device:Raspberry Pi 3 Model B
 - OS: Raspbian GNU/Linux 9 (stretch)
@@ -36,7 +36,7 @@ Lチカ環境はGPIOの21番ピンを使用。グラウンドとLEDの間には�
 [参考サイト:SkyWay WebRTC Gatewayハンズオン](https://qiita.com/nakakura/items/9d5fb1ff43c40c97c244)
 
 
-###SkyWay
+### SkyWay
 SkyWayを利用して、カメラ映像をストリーミングする  
   
 NTTコミュニケーションズが提供する「ビデオ通話、音声通話をかんたんにアプリに実装できる、
@@ -46,7 +46,7 @@ NTTコミュニケーションズが提供する「ビデオ通話、音声通�
 **上記公式サイトに沿って設定し、APIKeyを取得する。(無料)**
 
 
-####WebRTC Gateway
+#### WebRTC Gateway
 SkyWayが提供するIOT端末用のSkyWayEngine
 
 [公式解説](https://webrtc.ecl.ntt.com/documents/webrtc-gateway.html)
@@ -58,7 +58,7 @@ SkyWayが提供するIOT端末用のSkyWayEngine
 **ラズパイで実行するため`gateway_linux_arm`をダウンロードする**  
 [ダウンロード v0.3.2](https://github.com/SkyWay/SkyWay-webrtc-gateway/releases/tag/0.3.2)
 
-###Firebase
+### Firebase
 [Firebase](https://firebase.google.com/?hl=ja)  
 以下の理由によりFirebaseを利用する
 - Wepアプリのデプロイ(Hosting)
@@ -129,7 +129,7 @@ $ npm run generate
 ```
 
 ## Usage
-###ラズパイ側(カメラ・バックエンド)
+### ラズパイ側(カメラ・バックエンド)
 
 ```sh
 #skywayエンジンであるweb_gatewayを起動
@@ -140,7 +140,7 @@ python3 wabrtc_control.py
 
 ```
 
-###Webアプリ側(視聴側・フロントエンド)
+### Webアプリ側(視聴側・フロントエンド)
 
 1. Firebaseにデプロイしたサイトにアクセス
 2. 設定してメールアドレス、パスワードでログイン
