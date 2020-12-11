@@ -1,2 +1,2 @@
 requests==2.25.0
-pydevd-pycharm==202.6397.98
+RPi.GPIO==0.6.5

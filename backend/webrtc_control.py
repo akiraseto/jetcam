@@ -8,11 +8,12 @@ from data import Data
 from robot import Robot
 import config
 
-# リモートデバッグ用モジュール
-import pydevd_pycharm
 
-pydevd_pycharm.settrace('192.168.0.20', port=60000,
-                        stdoutToServer=True, stderrToServer=True)
+# jetBrainsリモートデバッグ用モジュール
+# import pydevd_pycharm
+#
+# pydevd_pycharm.settrace('192.168.0.20', port=60000,
+#                         stdoutToServer=True, stderrToServer=True)
 
 
 def main():
