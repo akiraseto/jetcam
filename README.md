@@ -3,7 +3,9 @@ SkyWayとRaspberryPi(以下:ラズパイ)を利用したリモートカメラシ
 旅行中のペット見守りカメラとして開発。  
 
 ![frontend](doc/img/frontend.png)
-![raspberrypi](doc/img/raspi.jpg)
+![raspberrypi](doc/img/raspi.jpg)  
+
+![diagram](doc/img/diagram.png)
 
 
 
