@@ -3,6 +3,9 @@
 #include "ev3api.h"
 #include "app.h"
 
+#include <stdio.h>
+#include <stdbool.h>
+
 #define DEBUG
 
 #ifdef DEBUG
@@ -24,7 +27,7 @@ ulong_t get_time()
 {
   static ulong_t start = -1;
   ulong_t time;
-  get_tim(&time); 
+  get_tim(&time);
   if(start < 0){
     start = time;
   }
@@ -100,6 +103,30 @@ void main_task(intptr_t unused) {
 	if (steer < -100) steer=-100;
 	ev3_motor_steer(left_motor_port, right_motor_port, drive, steer);
 	continue;
+      }
+
+      if (cmd_id == 20) {
+	left_motor_port = read_byte(serial);
+	int power = read_byte(serial) - 100;
+	if (power > 100) power=100;
+	if (power < -100) power=-100;
+	ev3_motor_set_power(left_motor_port, power);
+	continue;
+      }
+
+      if (cmd_id == 30) {
+	left_motor_port = read_byte(serial);
+	ev3_motor_stop(left_motor_port, false);
+	continue;
+      }
+
+      if (cmd_id == 50) {
+    left_motor_port = read_byte(serial);
+    int degree = read_byte(serial);
+    uint32_t speed = read_byte(serial);
+    bool_t blocking = true;
+    ev3_motor_rotate(left_motor_port, degree, speed, blocking);
+    continue;
       }
 
       if (cmd_id == 100) {

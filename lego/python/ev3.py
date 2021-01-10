@@ -126,6 +126,21 @@ class EV3():
         steer = min(max(steer, 0), 200)
         self._write([left_motor_port, right_motor_port, drive, steer])
 
+    def motor_set_power(self, motor_port, power):
+        self._send_header(20)
+        power = int(power) + 100
+        power = min(max(power, 0), 200)
+        self._write([motor_port, power])
+
+    def motor_stop(self, motor_port):
+        self._send_header(30)
+        self._write([motor_port])
+
+    def motor_rotate(self, motor_port, degrees, speed):
+        self._send_header(50)
+        speed = min(max(speed, 0), 100)
+        self._write([motor_port, degrees, speed])
+
     def sensor_config(self, sensor_port, sensor_type):
         self._send_header(100)
         self._write([sensor_port, sensor_type])

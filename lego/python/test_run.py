@@ -23,12 +23,27 @@ print("Push touch sensor to run your EV3.")
 while not ev3.touch_sensor_is_pressed(touch_port):
     pass
 print("Go!")
-ev3.motor_steer(lmotor_port, mini_motor_port, 50, 0)
+# ev3.motor_rotate(mini_motor_port, 360, 5)
+
+
+ev3.motor_set_power(mini_motor_port, 5)
+time.sleep(1)
+
+ev3.motor_stop(mini_motor_port)
+
 time.sleep(3)
 
-# ３秒間立ったら停止.
-print("Stop.")
-ev3.motor_steer(lmotor_port, mini_motor_port, 0, 0)
+ev3.motor_set_power(mini_motor_port, 100)
+time.sleep(1)
+
+ev3.motor_stop(mini_motor_port)
+
+# ev3.motor_steer(lmotor_port, mini_motor_port, 50, 0)
+# time.sleep(3)
+#
+# # ３秒間立ったら停止.
+# print("Stop.")
+# ev3.motor_steer(lmotor_port, mini_motor_port, 0, 0)
 
 # 終了処理.
 ev3.close()
