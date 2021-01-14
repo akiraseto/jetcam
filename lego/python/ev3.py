@@ -132,9 +132,12 @@ class EV3():
         power = min(max(power, 0), 200)
         self._write([motor_port, power])
 
-    def motor_stop(self, motor_port):
+    def motor_stop(self, motor_port, use_break):
         self._send_header(30)
-        self._write([motor_port])
+        set_break = 0
+        if use_break:
+            set_break = 1
+        self._write([motor_port, set_break])
 
     def motor_rotate(self, motor_port, degrees, speed):
         self._send_header(50)

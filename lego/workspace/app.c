@@ -116,7 +116,12 @@ void main_task(intptr_t unused) {
 
       if (cmd_id == 30) {
 	left_motor_port = read_byte(serial);
-	ev3_motor_stop(left_motor_port, false);
+	int use_break = read_byte(serial);
+    bool_t breaking = false;
+    if (use_break == 1) {
+      breaking = true
+    }
+	ev3_motor_stop(left_motor_port, breaking);
 	continue;
       }
 

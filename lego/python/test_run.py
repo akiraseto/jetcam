@@ -2,48 +2,50 @@ import time
 from ev3 import EV3
 
 # jetBrainsリモートデバッグ用モジュール
-import pydevd_pycharm
-
-pydevd_pycharm.settrace('192.168.0.20', port=60000,
-                        stdoutToServer=True, stderrToServer=True)
+# import pydevd_pycharm
+#
+# pydevd_pycharm.settrace('192.168.0.20', port=60000,
+#                         stdoutToServer=True, stderrToServer=True)
 
 # モーターとセンサーの通信ポートの定義.
-touch_port = EV3.PORT_2
-lmotor_port = EV3.PORT_B
-mini_motor_port = EV3.PORT_D
+sensor_pan = EV3.PORT_2
+sensor_pedestal = EV3.PORT_3
+start_switch = EV3.PORT_4
+
+# 回転: pan +時計回り
+pan = EV3.PORT_A
+# 上下移動: pedestal +下がる
+pedestal = EV3.PORT_B
+# 上下角: tilt -上がる
+tilt = EV3.PORT_C
 
 # モーターとセンサーの初期設定.
 ev3 = EV3()
-ev3.motor_config(lmotor_port, EV3.LARGE_MOTOR)
-ev3.motor_config(mini_motor_port, EV3.MEDIUM_MOTOR)
-ev3.sensor_config(touch_port, EV3.TOUCH_SENSOR)
+ev3.sensor_config(sensor_pan, EV3.TOUCH_SENSOR)
+ev3.sensor_config(sensor_pedestal, EV3.TOUCH_SENSOR)
+ev3.sensor_config(start_switch, EV3.TOUCH_SENSOR)
+ev3.motor_config(pan, EV3.LARGE_MOTOR)
+ev3.motor_config(pedestal, EV3.LARGE_MOTOR)
+ev3.motor_config(tilt, EV3.MEDIUM_MOTOR)
 
-# タッチセンサーが押されたら発進.
-print("Push touch sensor to run your EV3.")
-while not ev3.touch_sensor_is_pressed(touch_port):
+# タッチセンサーが押されたら発進
+print("スタートスイッチを押してください。")
+while not ev3.touch_sensor_is_pressed(start_switch):
     pass
-print("Go!")
-# ev3.motor_rotate(mini_motor_port, 360, 5)
+print("Start!")
 
+ev3.motor_set_power(pan, 0)
+print('pan', ev3.touch_sensor_is_pressed(sensor_pan))
 
-ev3.motor_set_power(mini_motor_port, 5)
+ev3.motor_set_power(pedestal, 5)
+print('pedestal', ev3.touch_sensor_is_pressed(sensor_pedestal))
+ev3.motor_set_power(tilt, 0)
 time.sleep(1)
 
-ev3.motor_stop(mini_motor_port)
-
-time.sleep(3)
-
-ev3.motor_set_power(mini_motor_port, 100)
-time.sleep(1)
-
-ev3.motor_stop(mini_motor_port)
-
-# ev3.motor_steer(lmotor_port, mini_motor_port, 50, 0)
-# time.sleep(3)
-#
-# # ３秒間立ったら停止.
-# print("Stop.")
-# ev3.motor_steer(lmotor_port, mini_motor_port, 0, 0)
+ev3.motor_stop(pan, False)
+ev3.motor_stop(pedestal, True)
+ev3.motor_stop(tilt, False)
 
 # 終了処理.
 ev3.close()
+print("Stop!")
