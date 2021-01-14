@@ -50,7 +50,7 @@ class Robot:
             print('socket error:', e)
             self.make_socket()
 
-    def socket_loop(self, queue):
+    def socket_loop(self, queue, lego):
         """ソケット通信を待ち受ける
         """
 
@@ -67,7 +67,7 @@ class Robot:
 
             elif 'lego' in json_data.keys():
                 print(json_data)
-                # todo:LEGOの処理につなぐ
+                lego.move_motor(json_data['lego'])
 
     @staticmethod
     def close():
