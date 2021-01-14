@@ -32,6 +32,14 @@
       </div>
 
       <video id="remote_video" muted autoplay playsinline/>
+
+      <h2>control</h2>
+      <input id="lego_move" v-model="lego.move" type="text">
+      <input id="lego_power" v-model="lego.power" type="text">
+      <input id="lego_time" v-model="lego.time" type="text">
+      <b-button @click="sendLegoOrder">LEGO</b-button>
+
+
     </div>
   </div>
 </template>
@@ -50,7 +58,12 @@ export default {
       message: '',
       mediaConnection: null,
       dataConnection: null,
-      remoteStream: null
+      remoteStream: null,
+      lego: {
+        move: "",
+        power: 0,
+        time: 0
+      }
     }
   },
 
@@ -121,16 +134,33 @@ export default {
       })
     },
 
-    callOff () {
+    callOff() {
       this.peer.destroy()
       this.peer = null
 
       this.targetId = ''
     },
 
-    sendMessage () {
+    sendMessage() {
       console.log(this.message)
-      this.dataConnection.send(this.message)
+
+      let data = {
+        message: this.message
+      }
+
+      this.dataConnection.send(JSON.stringify(data))
+    },
+
+    sendLegoOrder() {
+      console.log(this.lego)
+
+      let data = {
+        lego: this.lego
+      }
+
+      this.dataConnection.send(JSON.stringify(data))
+
+
     }
   }
 }

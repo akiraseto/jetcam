@@ -54,8 +54,8 @@ def main():
             results = queue.get()
             print(results)
 
-            if 'data' in results.keys():
-                if results['data'] in config.SHUTDOWN_LIST:
+            if 'message' in results.keys():
+                if results['message'] in config.SHUTDOWN_LIST:
                     break
 
             elif 'media_connection_id' in results.keys():

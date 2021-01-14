@@ -1,4 +1,6 @@
 import socket
+import json
+
 import RPi.GPIO as GPIO
 
 
@@ -38,7 +40,7 @@ class Robot:
         self.sock.bind(loc_addr)
 
     def recv_data(self):
-        """データを受け取る受取る
+        """データを受け取る
         """
 
         try:
@@ -56,8 +58,16 @@ class Robot:
         while True:
             data = self.recv_data()
             data = data.decode(encoding="utf8", errors='ignore')
-            queue.put({'data': data})
-            self.pin(data)
+            data = data[2:]
+            json_data = json.loads(data)
+
+            if 'message' in json_data.keys():
+                queue.put(json_data)
+                self.pin(json_data['message'])
+
+            elif 'lego' in json_data.keys():
+                print(json_data)
+                # todo:LEGOの処理につなぐ
 
     @staticmethod
     def close():
