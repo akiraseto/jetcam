@@ -62,6 +62,9 @@ class Lego_arm:
             breaking = True
         elif data['move'] == 'tilt':
             module = self.tilt
+        elif data['move'] == 'stop':
+            self.emergency_stop()
+            return
 
         self.ev3.motor_set_power(module, power)
 
@@ -69,8 +72,8 @@ class Lego_arm:
         t_end = time.time() + interval
         while time.time() < t_end:
             if self.ev3.touch_sensor_is_pressed(self.stop_switch):
-                print('stop arm')
-                break
+                self.emergency_stop()
+                return
 
             if self.ev3.touch_sensor_is_pressed(self.sensor_pan):
                 self.ev3.motor_stop(self.pan, False)
@@ -89,6 +92,12 @@ class Lego_arm:
                 break
 
         self.ev3.motor_stop(module, breaking)
+
+    def emergency_stop(self):
+        self.ev3.motor_stop(self.pan, False)
+        self.ev3.motor_stop(self.pedestal, False)
+        self.ev3.motor_stop(self.tilt, False)
+        print('Emergency Stop All!')
 
     def close(self):
         self.ev3.close()

@@ -9,7 +9,8 @@
       </div>
 
       <div v-for="id in peersList" class="target-button">
-        <b-button v-show="id !== peerId" @click="setPartner(id)" :class="{ 'btn-danger': id === targetId }">
+        <b-button v-show="id !== peerId" @click="setPartner(id)"
+                  :class="{ 'btn-danger': id === targetId }">
           {{ id }}
         </b-button>
       </div>
@@ -65,7 +66,7 @@
         <b-row class="my-1">
 
           <b-col sm="11">
-            <b-button block class="btn-danger" @click="sendLegoOrder">ARM STOP
+            <b-button block class="btn-danger" @click="armStop">ARM STOP
             </b-button>
           </b-col>
 
@@ -97,7 +98,7 @@ import Peer from 'skyway-js'
 
 export default {
   middleware: 'authenticated',
-  data () {
+  data() {
     return {
       peer: null,
       peerId: process.env.peerId,
@@ -130,11 +131,11 @@ export default {
   },
 
   methods: {
-    setPartner (partner_id) {
+    setPartner(partner_id) {
       this.targetId = partner_id
 
     },
-    establish () {
+    establish() {
       this.peer = new Peer(this.peerId, {
         key: this.skywayKey,
         debug: 3
@@ -154,7 +155,7 @@ export default {
       })
     },
 
-    callOn () {
+    callOn() {
       this.remoteStream = document.getElementById('remote_video')
 
       //media streamの接続
@@ -253,8 +254,16 @@ export default {
       }
 
       this.dataConnection.send(JSON.stringify(data))
-    }
+    },
+
+    armStop() {
+      this.lego.move = 'stop'
+      this.sendLegoOrder()
+
+      this.lego.move = ''
+    },
   }
+
 }
 </script>
 
