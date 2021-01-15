@@ -23,22 +23,70 @@
         </b-button>
       </div>
 
-      <div class="input">
-        <label for="chat_box">Message</label>
-        <input id="chat_box" v-model="message" type="text">
-        <b-button @click="sendMessage" v-bind:disabled=" !dataConnection">
-          send message
-        </b-button>
-      </div>
+      <video v-show="mediaConnection" id="remote_video" muted autoplay
+             playsinline/>
 
-      <video id="remote_video" muted autoplay playsinline/>
+      <b-container fluid>
+        <h2>Operation</h2>
 
-      <h2>control</h2>
-      <input id="lego_move" v-model="lego.move" type="text">
-      <input id="lego_power" v-model="lego.power" type="text">
-      <input id="lego_time" v-model="lego.time" type="text">
-      <b-button @click="sendLegoOrder">LEGO</b-button>
+        <b-row class="my-1">
+          <b-col sm="11">
+            <b-form-input id="lego-pan" v-model="ope.pan" type="range"
+                          min="-100" max="100" step="1"></b-form-input>
+            <div class="mb-1">{{ ope.pan }}</div>
+          </b-col>
+          <b-col sm="1">
+            <b-button @click="optimizeValue('pan')">PAN</b-button>
+          </b-col>
+        </b-row>
 
+        <b-row class="my-1">
+          <b-col sm="11">
+            <b-form-input id="lego-pedestal" v-model="ope.pedestal" type="range"
+                          min="-100" max="100" step="1"></b-form-input>
+            <div class="mb-1">{{ ope.pedestal }}</div>
+          </b-col>
+          <b-col sm="1">
+            <b-button @click="optimizeValue('pedestal')">PEDESTAL</b-button>
+          </b-col>
+        </b-row>
+
+        <b-row class="my-1">
+          <b-col sm="11">
+            <b-form-input id="lego-tilt" v-model="ope.tilt" type="range"
+                          min="-100" max="100" step="1"></b-form-input>
+            <div class="mb-1">{{ ope.tilt }}</div>
+          </b-col>
+          <b-col sm="1">
+            <b-button @click="optimizeValue('tilt')">TILT</b-button>
+          </b-col>
+        </b-row>
+
+        <b-row class="my-1">
+
+          <b-col sm="11">
+            <b-button block class="btn-danger" @click="sendLegoOrder">ARM STOP
+            </b-button>
+          </b-col>
+
+        </b-row>
+
+        <b-row class="mt-3 mb-1">
+          <b-col sm="2">
+            <label for="message">Message:</label>
+          </b-col>
+          <b-col sm="9">
+            <b-form-input id="message" v-model="message"
+                          type="text"></b-form-input>
+          </b-col>
+          <b-col sm="1">
+            <b-button @click="sendMessage">
+              SEND
+            </b-button>
+          </b-col>
+        </b-row>
+
+      </b-container>
 
     </div>
   </div>
@@ -63,6 +111,11 @@ export default {
         move: "",
         power: 0,
         time: 0
+      },
+      ope: {
+        pan: 0,
+        pedestal: 0,
+        tilt: 0
       }
     }
   },
@@ -151,16 +204,55 @@ export default {
       this.dataConnection.send(JSON.stringify(data))
     },
 
+    optimizeValue(module) {
+      this.lego.move = module
+      let value = this.ope[module]
+      let plusMinus = 1
+
+      //+-を確認
+      if (value === 0) {
+        return
+      } else if (value < 0) {
+        plusMinus = -1
+        value = Math.abs(value)
+      }
+
+      //挙動の調整
+      if (value < 40) {
+        this.lego.power = plusMinus
+        this.lego.time = value / 10
+
+      } else if (40 <= value && value < 70) {
+        this.lego.power = 3 * plusMinus
+        this.lego.time = value / 15
+
+      } else if (70 <= value) {
+        this.lego.power = 9 * plusMinus
+        this.lego.time = value / 20
+
+      }
+
+      // pedestal、tilt 動きと値が正負逆なので調整
+      if (['pedestal', 'tilt'].includes(module)) {
+        this.lego.power = this.lego.power * -1
+      }
+
+      this.sendLegoOrder()
+
+      //初期化
+      this.lego.move = ""
+      this.lego.power = 0
+      this.lego.time = 0
+      this.ope[module] = 0
+    },
+
     sendLegoOrder() {
       console.log(this.lego)
-
       let data = {
         lego: this.lego
       }
 
       this.dataConnection.send(JSON.stringify(data))
-
-
     }
   }
 }
