@@ -28,7 +28,8 @@
 
       </div>
 
-      <video v-show="mediaConnection" id="remote_video" muted autoplay
+      <video class="w-100" v-show="mediaConnection" id="remote_video" muted
+             autoplay
              playsinline/>
 
       <div>
@@ -112,7 +113,7 @@
                                   placeholder="Default: jetcam"></b-form-input>
                   </b-col>
 
-                  <b-col sm="2" class="text-sm-left text-center">
+                  <b-col sm="2" class="text-sm-left text-center mt-sm-0 mt-2">
                     <b-button @click="callOn" v-bind:disabled=" !peer"
                               :class="{ 'btn-success': mediaConnection }">
                       Call
@@ -161,7 +162,7 @@
                     </b-form-input>
                   </b-col>
 
-                  <b-col sm="2" class="text-sm-left text-center">
+                  <b-col sm="2" class="text-sm-left text-center mt-sm-0 mt-2">
                     <b-button @click="sendOrder" v-bind:disabled=" !lego.move">
                       LEGO
                     </b-button>
@@ -188,7 +189,7 @@
                                   type="text"></b-form-input>
                   </b-col>
 
-                  <b-col sm="2" class="text-sm-left text-center">
+                  <b-col sm="2" class="text-sm-left text-center" mt-sm-0 mt-2>
                     <b-button @click="sendOrder('message')">
                       SEND
                     </b-button>
