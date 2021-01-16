@@ -17,7 +17,7 @@
 
       <div class="input">
         <b-button-group>
-          <b-button @click="callOn" v-bind:disabled=" !targetId"
+          <b-button @click="callOn" v-bind:disabled=" !peer"
                     :class="{ 'btn-success': mediaConnection }">
             Call
           </b-button>
@@ -76,7 +76,8 @@
 
                 <b-row class="my-1">
                   <b-col sm="10">
-                    <b-button block class="btn-danger" @click="armStop">ARM STOP
+                    <b-button block class="btn-danger"
+                              @click="optimizeValue('stop')">ARM STOP
                     </b-button>
                   </b-col>
                 </b-row>
@@ -91,7 +92,7 @@
                   </b-col>
 
                   <b-col sm="2" class="text-sm-left text-center">
-                    <b-button @click="sendMessage">
+                    <b-button @click="sendOrder('message')">
                       SEND
                     </b-button>
                   </b-col>
@@ -112,7 +113,7 @@
                   </b-col>
 
                   <b-col sm="2" class="text-sm-left text-center">
-                    <b-button @click="callOn" v-bind:disabled=" !targetId"
+                    <b-button @click="callOn" v-bind:disabled=" !peer"
                               :class="{ 'btn-success': mediaConnection }">
                       Call
                     </b-button>
@@ -161,7 +162,7 @@
                   </b-col>
 
                   <b-col sm="2" class="text-sm-left text-center">
-                    <b-button @click="sendLegoOrder">
+                    <b-button @click="sendOrder" v-bind:disabled=" !lego.move">
                       LEGO
                     </b-button>
                   </b-col>
@@ -172,7 +173,8 @@
 
                 <b-row class="my-1">
                   <b-col sm="10">
-                    <b-button block class="btn-danger" @click="armStop">ARM STOP
+                    <b-button block class="btn-danger"
+                              @click="optimizeValue('stop')">ARM STOP
                     </b-button>
                   </b-col>
                 </b-row>
@@ -187,7 +189,7 @@
                   </b-col>
 
                   <b-col sm="2" class="text-sm-left text-center">
-                    <b-button @click="sendMessage">
+                    <b-button @click="sendOrder('message')">
                       SEND
                     </b-button>
                   </b-col>
@@ -214,7 +216,7 @@ export default {
       peer: null,
       peerId: process.env.peerId,
       peersList: [],
-      targetId: '',
+      targetId: 'jetcam',
       message: '',
       mediaConnection: null,
       dataConnection: null,
@@ -322,24 +324,15 @@ export default {
       }
     },
 
-    //todo:send系をひとつにまとめる
-    sendMessage() {
-      if (!this.dataConnection) {
-        console.log('データコネクションが接続されていません')
+    optimizeValue(module) {
+      this.lego.move = module
+
+      //非常停止
+      if (this.lego.move === 'stop') {
+        this.sendOrder()
         return
       }
 
-      console.log(this.message)
-      let data = {
-        message: this.message
-      }
-
-      this.dataConnection.send(JSON.stringify(data))
-      this.message = ''
-    },
-
-    optimizeValue(module) {
-      this.lego.move = module
       let value = this.ope[module]
       let plusMinus = 1
 
@@ -371,16 +364,25 @@ export default {
         this.lego.power = this.lego.power * -1
       }
 
-      this.sendLegoOrder(module)
+      this.sendOrder(module)
     },
 
-    sendLegoOrder(module = null) {
+    sendOrder(module = null) {
       if (!this.dataConnection) {
         console.log('データコネクションが接続されていません')
         return
       }
 
-      console.log(this.lego)
+      if (module === 'message') {
+        let data = {
+          message: this.message
+        }
+
+        this.dataConnection.send(JSON.stringify(data))
+        this.message = ''
+        return
+      }
+
       let data = {
         lego: this.lego
       }
@@ -391,18 +393,11 @@ export default {
       this.lego.move = ""
       this.lego.power = 0
       this.lego.time = 0
-
       if (module) {
         this.ope[module] = 0
       }
     },
 
-    armStop() {
-      this.lego.move = 'stop'
-      this.sendLegoOrder()
-
-      this.lego.move = ''
-    },
   }
 
 }
