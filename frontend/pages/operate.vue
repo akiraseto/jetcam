@@ -8,7 +8,7 @@
         </b-button>
       </div>
 
-      <div v-for="id in peersList" class="target-button">
+      <div v-for="id in peersList" class="target-button" v-show="peer">
         <b-button v-show="id !== peerId" @click="setPartner(id)"
                   :class="{ 'btn-danger': id === targetId }">
           {{ id }}
@@ -16,18 +16,22 @@
       </div>
 
       <div class="input">
-        <b-button @click="callOn" v-bind:disabled=" !targetId">
-          Call
-        </b-button>
-        <b-button @click="callOff" v-bind:disabled=" !mediaConnection">
-          Stop
-        </b-button>
+        <b-button-group>
+          <b-button @click="callOn" v-bind:disabled=" !targetId"
+                    :class="{ 'btn-success': mediaConnection }">
+            Call
+          </b-button>
+          <b-button @click="callOff" v-bind:disabled=" !mediaConnection">
+            Stop
+          </b-button>
+        </b-button-group>
+
       </div>
 
       <video v-show="mediaConnection" id="remote_video" muted autoplay
              playsinline/>
 
-      <b-container fluid>
+      <b-container fluid v-show="dataConnection">
         <h2>Operation</h2>
 
         <b-row class="my-1">
@@ -96,6 +100,9 @@
 <script>
 import Peer from 'skyway-js'
 
+//todo:マニュアル入力モードを追加
+//todo:レイアウトを調整(スマホ意識)
+
 export default {
   middleware: 'authenticated',
   data() {
@@ -156,6 +163,12 @@ export default {
     },
 
     callOn() {
+      if (this.mediaConnection) {
+        console.log('すでに接続しています。')
+        return
+      }
+
+
       this.remoteStream = document.getElementById('remote_video')
 
       //media streamの接続
@@ -193,6 +206,7 @@ export default {
       this.peer = null
 
       this.targetId = ''
+      console.log('全て切断しました。')
     },
 
     sendMessage() {
@@ -202,7 +216,11 @@ export default {
         message: this.message
       }
 
-      this.dataConnection.send(JSON.stringify(data))
+      if (this.dataConnection) {
+        this.dataConnection.send(JSON.stringify(data))
+      } else {
+        console.log('データコネクションが接続されていません')
+      }
     },
 
     optimizeValue(module) {
