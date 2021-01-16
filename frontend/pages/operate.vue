@@ -46,7 +46,7 @@
                     <div class="mb-1">{{ ope.pan }}</div>
                   </b-col>
                   <b-col sm="2" class="text-sm-left text-center">
-                    <b-button @click="optimizeValue('pan')">PAN</b-button>
+                    <b-button @click="optimizeValue('pan')">Pan</b-button>
                   </b-col>
                 </b-row>
 
@@ -59,7 +59,7 @@
                   </b-col>
 
                   <b-col sm="2" class="text-sm-left text-center">
-                    <b-button @click="optimizeValue('pedestal')">PEDE</b-button>
+                    <b-button @click="optimizeValue('pedestal')">Pede</b-button>
                   </b-col>
                 </b-row>
 
@@ -71,14 +71,14 @@
                   </b-col>
 
                   <b-col sm="2" class="text-sm-left text-center">
-                    <b-button @click="optimizeValue('tilt')">TILT</b-button>
+                    <b-button @click="optimizeValue('tilt')">Tilt</b-button>
                   </b-col>
                 </b-row>
 
                 <b-row class="my-1">
                   <b-col sm="10">
                     <b-button block class="btn-danger"
-                              @click="optimizeValue('stop')">ARM STOP
+                              @click="optimizeValue('stop')">Stop
                     </b-button>
                   </b-col>
                 </b-row>
@@ -94,7 +94,7 @@
 
                   <b-col sm="2" class="text-sm-left text-center">
                     <b-button @click="sendOrder('message')">
-                      SEND
+                      Send
                     </b-button>
                   </b-col>
                 </b-row>
@@ -127,15 +127,15 @@
                     <b-button-group class="w-100 mb-2">
                       <b-button @click="setModule('pan')"
                                 :class="{ 'btn-success': lego.move === 'pan' }">
-                        PAN
+                        Pan
                       </b-button>
                       <b-button @click="setModule('pedestal')"
                                 :class="{ 'btn-success': lego.move === 'pedestal' }">
-                        PEDE
+                        Pede
                       </b-button>
                       <b-button @click="setModule('tilt')"
                                 :class="{ 'btn-success': lego.move === 'tilt' }">
-                        TILT
+                        Tilt
                       </b-button>
                     </b-button-group>
                   </b-col>
@@ -164,18 +164,18 @@
 
                   <b-col sm="2" class="text-sm-left text-center mt-sm-0 mt-2">
                     <b-button @click="sendOrder" v-bind:disabled=" !lego.move">
-                      LEGO
+                      Move
                     </b-button>
                   </b-col>
                   <b-col>
-                    <p class="text-danger small">Pedestal,TiltのPowerは正負逆</p>
+                    <p class="text-danger small">Pede,TiltのPower値は正負逆</p>
                   </b-col>
                 </b-row>
 
                 <b-row class="my-1">
                   <b-col sm="10">
                     <b-button block class="btn-danger"
-                              @click="optimizeValue('stop')">ARM STOP
+                              @click="optimizeValue('stop')">Stop
                     </b-button>
                   </b-col>
                 </b-row>
@@ -191,7 +191,7 @@
 
                   <b-col sm="2" class="text-sm-left text-center" mt-sm-0 mt-2>
                     <b-button @click="sendOrder('message')">
-                      SEND
+                      Send
                     </b-button>
                   </b-col>
                 </b-row>
