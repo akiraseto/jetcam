@@ -3,7 +3,6 @@ SkyWayとRaspberryPi(以下:ラズパイ)を利用したリモートカメラシ
 LEGOと連動して遠隔からカメラアームを旋回・上下・首振り操作。  
 旅行中のペット見守りカメラとして開発。  
 
-_コチラはVer1.0 別リポジトリにLEGOアーム制御版が存在します。_  
 
 ![frontend](doc/img/frontend.png)
 ![lego](doc/img/lego.jpg)
