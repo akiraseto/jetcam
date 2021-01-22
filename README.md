@@ -2,6 +2,8 @@
 SkyWayとRaspberryPi(以下:ラズパイ)を利用したリモートカメラシステム。  
 旅行中のペット見守りカメラとして開発。  
 
+_コチラはVer1.0 別リポジトリにLEGOアーム制御版が存在します。_  
+
 ![frontend](doc/img/frontend.png)
 ![raspberrypi](doc/img/raspi.jpg)  
 
