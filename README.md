@@ -1,11 +1,11 @@
 # jetcam
 SkyWayとRaspberryPi(以下:ラズパイ)を利用したリモートカメラシステム。  
+LEGOと連動して遠隔からカメラアームを旋回・上下・首振り操作。  
 旅行中のペット見守りカメラとして開発。  
 
-_コチラはVer1.0 別リポジトリにLEGOアーム制御版が存在します。_  
 
 ![frontend](doc/img/frontend.png)
-![raspberrypi](doc/img/raspi.jpg)  
+![lego](doc/img/lego.jpg)
 
 ![diagram](doc/img/diagram.png)
 
@@ -17,12 +17,13 @@ _コチラはVer1.0 別リポジトリにLEGOアーム制御版が存在しま�
 - ログイン認証付きWEBアプリで安心・安全
 - メッセージ入力により、LEDを点灯、消灯操作
 - メッセージ入力により、カメラがあるラズパイ側のプログラムをシャットダウン可能
-
+- WEBアプリを通して、カメラの付いたLEGOアームを操作可能
+- LEGOアーム操作は、Pan(旋回)、Pedestal(高さ)、Tilt(上下首振り)の3種
 
 ## Requirement
 - Webアプリ側(frontend): Nuxt.jsにて構築
 - ラズパイ側(backend): Pythonにて構築
-
+- LEGOアーム(カメラアーム): LEGO-EV3にてC言語でコンパイルしたファイルを実行
 
 ### ラズパイ
 実行環境
@@ -82,6 +83,42 @@ Webアプリのデプロイ先となる。
 #### Firestore
 SkyWay APIKeyを格納する。  
 `apis > SkyWay > key`こちらにstring形式で入力
+
+
+### LEGO
+Webアプリからの命令をラズパイを通して、LEGO-EV3に伝えて物理アームを制御する。  
+LEGOとラズパイは変換パーツを使ってシリアル接続。  
+
+LEGO-EV3ポートとUSBのシリアル接続パーツ [Console Adapter for EV3](http://www.mindsensors.com/ev3-and-nxt/40-console-adapter-for-ev3)
+
+使用したLEGO商品 [LEGO EV3](https://education.lego.com/ja-jp/products/-ev3-/5003400#%E6%95%99%E8%82%B2%E7%89%88%E3%83%AC%E3%82%B4-%E3%83%9E%E3%82%A4%E3%83%B3%E3%83%89%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A0-ev3-%E5%9F%BA%E6%9C%AC%E3%82%BB%E3%83%83%E3%83%88)  
+  
+LEGO組み立ては、公式ページを参考にパーツを組み合わせて構築  
+ [基本セットモデル組立説明書](https://education.lego.com/ja-jp/product-resources/mindstorms-ev3/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89/%E7%B5%84%E7%AB%8B%E8%AA%AC%E6%98%8E%E6%9B%B8%EF%BC%8F%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0)
+
+- メイン部分: ロボットアーム
+- カメラの上下首振り: パピーの一部
+
+
+#### LEGO-EV3の設定
+- 制御パーツEV3に開発プラットフォームEV3RTを環境構築
+- EV3RTでのLEGOモジュール制御用にC言語コンパイル
+- ラズパイとシリアル通信開設後に、EV3RTからコンパイルされたプログラムを起動
+
+参考:  
+[TOPPERS EV3RT公式ページ](https://dev.toppers.jp/trac_user/ev3pf/wiki/WhatsEV3RT)  
+[EV3RT C API Reference](https://www.toppers.jp/ev3pf/EV3RT_C_API_Reference/)  
+
+##### LEGO-EV3手順
+工程が多く複雑なため、プリファードネットワークが勧める、アフレルの教材を参考にする。  
+[pfnet-research/chainer-ev3](https://github.com/pfnet-research/chainer-ev3)  
+
+[アフレル 教材ページ](https://ai.afrel.co.jp/chainer.html)
+こちらのページの、「学習する」をクリックしてIDとパスワードを登録して（無料）教材をダウンロード。  
+
+- アフレルの教材を参考にGoogle ColaboratoryでのEV3実行環境構築を行う
+- Colaboratoryのノートブック上で、app.cを、`lego/workspace/app.c`に差し替える
+- 手順に従い、コンパイルしたファイルをEV3にSDカードで読み込ませて起動する
 
 
 ## Backend

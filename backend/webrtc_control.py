@@ -6,6 +6,7 @@ from peer import Peer
 from media import Media
 from data import Data
 from robot import Robot
+from lego.arm import Lego_arm
 import config
 
 
@@ -17,9 +18,6 @@ import config
 
 
 def main():
-    queue = que.Queue()
-    robot = Robot()
-
     peer_id = config.PEER_ID
     media_connection_id = ''
     data_connection_id = ''
@@ -41,12 +39,16 @@ def main():
 
     peer_id, peer_token = Peer.listen_open_event(peer_id, peer_token)
 
+    queue = que.Queue()
+    robot = Robot()
+    lego = Lego_arm()
+
     th_listen = threading.Thread(target=Peer.listen_event,
                                  args=(peer_id, peer_token, queue, robot))
     th_listen.setDaemon(True)
     th_listen.start()
 
-    th_socket = threading.Thread(target=robot.socket_loop, args=(queue,))
+    th_socket = threading.Thread(target=robot.socket_loop, args=(queue, lego))
     th_socket.setDaemon(True)
     th_socket.start()
 
@@ -55,8 +57,8 @@ def main():
             results = queue.get()
             print(results)
 
-            if 'data' in results.keys():
-                if results['data'] in config.SHUTDOWN_LIST:
+            if 'message' in results.keys():
+                if results['message'] in config.SHUTDOWN_LIST:
                     break
 
             elif 'media_connection_id' in results.keys():
@@ -83,6 +85,7 @@ def main():
         pass
 
     robot.close()
+    lego.close()
     Peer.close_peer(peer_id, peer_token)
     process_gst.kill()
     print('all shutdown!')

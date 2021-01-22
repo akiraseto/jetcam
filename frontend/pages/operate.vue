@@ -8,30 +8,199 @@
         </b-button>
       </div>
 
-      <div v-for="id in peersList" class="target-button">
-        <b-button v-show="id !== peerId" @click="setPartner(id)" :class="{ 'btn-danger': id === targetId }">
+      <div v-for="id in peersList" class="target-button" v-show="peer">
+        <b-button v-show="id !== peerId" @click="setPartner(id)"
+                  :class="{ 'btn-danger': id === targetId }">
           {{ id }}
         </b-button>
       </div>
 
       <div class="input">
-        <b-button @click="callOn" v-bind:disabled=" !targetId">
-          Call
-        </b-button>
-        <b-button @click="callOff" v-bind:disabled=" !mediaConnection">
-          Stop
-        </b-button>
+        <b-button-group>
+          <b-button @click="callOn" v-bind:disabled=" !peer"
+                    :class="{ 'btn-success': mediaConnection }">
+            Call
+          </b-button>
+          <b-button @click="callOff" v-bind:disabled=" !mediaConnection">
+            Stop
+          </b-button>
+        </b-button-group>
+
       </div>
 
-      <div class="input">
-        <label for="chat_box">Message</label>
-        <input id="chat_box" v-model="message" type="text">
-        <b-button @click="sendMessage" v-bind:disabled=" !dataConnection">
-          send message
-        </b-button>
+      <video class="w-100" v-show="mediaConnection" id="remote_video" muted
+             autoplay
+             playsinline/>
+
+      <div>
+        <h3>Operation</h3>
+
+        <b-card no-body bg-variant="light">
+          <b-tabs card>
+            <b-tab title="Default" active>
+              <b-container fluid="sm">
+                <b-row class="my-1">
+                  <b-col sm="10">
+                    <b-form-input id="lego-pan" v-model="ope.pan" type="range"
+                                  min="-100" max="100" step="1"></b-form-input>
+                    <div class="mb-1">{{ ope.pan }}</div>
+                  </b-col>
+                  <b-col sm="2" class="text-sm-left text-center">
+                    <b-button @click="optimizeValue('pan')">Pan</b-button>
+                  </b-col>
+                </b-row>
+
+                <b-row class="my-1">
+                  <b-col sm="10">
+                    <b-form-input id="lego-pedestal" v-model="ope.pedestal"
+                                  type="range"
+                                  min="-100" max="100" step="1"></b-form-input>
+                    <div class="mb-1">{{ ope.pedestal }}</div>
+                  </b-col>
+
+                  <b-col sm="2" class="text-sm-left text-center">
+                    <b-button @click="optimizeValue('pedestal')">Pede</b-button>
+                  </b-col>
+                </b-row>
+
+                <b-row class="my-1">
+                  <b-col sm="10">
+                    <b-form-input id="lego-tilt" v-model="ope.tilt" type="range"
+                                  min="-100" max="100" step="1"></b-form-input>
+                    <div class="mb-1">{{ ope.tilt }}</div>
+                  </b-col>
+
+                  <b-col sm="2" class="text-sm-left text-center">
+                    <b-button @click="optimizeValue('tilt')">Tilt</b-button>
+                  </b-col>
+                </b-row>
+
+                <b-row class="my-1">
+                  <b-col sm="10">
+                    <b-button block class="btn-danger"
+                              @click="optimizeValue('stop')">Stop
+                    </b-button>
+                  </b-col>
+                </b-row>
+
+                <b-row class="mt-3">
+                  <b-col sm="2">
+                    <label for="message">Message:</label>
+                  </b-col>
+                  <b-col sm="8" class="mb-1">
+                    <b-form-input id="message" v-model="message"
+                                  type="text"></b-form-input>
+                  </b-col>
+
+                  <b-col sm="2" class="text-sm-left text-center">
+                    <b-button @click="sendOrder('message')">
+                      Send
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-container>
+            </b-tab>
+
+            <b-tab title="Manual">
+              <b-container fluid>
+                <b-row class="mt-3">
+                  <b-col sm="2">
+                    <label for="target">Connect:</label>
+                  </b-col>
+                  <b-col sm="8" class="mb-1">
+                    <b-form-input id="target" v-model="targetId"
+                                  type="text"
+                                  placeholder="Default: jetcam"></b-form-input>
+                  </b-col>
+
+                  <b-col sm="2" class="text-sm-left text-center mt-sm-0 mt-2">
+                    <b-button @click="callOn" v-bind:disabled=" !peer"
+                              :class="{ 'btn-success': mediaConnection }">
+                      Call
+                    </b-button>
+                  </b-col>
+                </b-row>
+                <hr>
+
+                <b-row>
+                  <b-col sm="10">
+                    <b-button-group class="w-100 mb-2">
+                      <b-button @click="setModule('pan')"
+                                :class="{ 'btn-success': lego.move === 'pan' }">
+                        Pan
+                      </b-button>
+                      <b-button @click="setModule('pedestal')"
+                                :class="{ 'btn-success': lego.move === 'pedestal' }">
+                        Pede
+                      </b-button>
+                      <b-button @click="setModule('tilt')"
+                                :class="{ 'btn-success': lego.move === 'tilt' }">
+                        Tilt
+                      </b-button>
+                    </b-button-group>
+                  </b-col>
+                </b-row>
+
+                <b-row>
+                  <b-col sm="2">
+                    <label for="power">Power:</label>
+                  </b-col>
+
+                  <b-col sm="3" class="mb-1">
+                    <b-form-input id="power" v-model="lego.power" type="number"
+                                  min="-100" max="100" step="1">
+                    </b-form-input>
+                  </b-col>
+
+                  <b-col sm="2">
+                    <label for="time">Time:</label>
+                  </b-col>
+
+                  <b-col sm="3" class="mb-1">
+                    <b-form-input id="time" v-model="lego.time" type="number"
+                                  min="0" max="20" step="0.1">
+                    </b-form-input>
+                  </b-col>
+
+                  <b-col sm="2" class="text-sm-left text-center mt-sm-0 mt-2">
+                    <b-button @click="sendOrder" v-bind:disabled=" !lego.move">
+                      Move
+                    </b-button>
+                  </b-col>
+                  <b-col>
+                    <p class="text-danger small">Pede,TiltのPower値は正負逆</p>
+                  </b-col>
+                </b-row>
+
+                <b-row class="my-1">
+                  <b-col sm="10">
+                    <b-button block class="btn-danger"
+                              @click="optimizeValue('stop')">Stop
+                    </b-button>
+                  </b-col>
+                </b-row>
+
+                <b-row class="mt-3">
+                  <b-col sm="2">
+                    <label for="message2">Message:</label>
+                  </b-col>
+                  <b-col sm="8" class="mb-1">
+                    <b-form-input id="message2" v-model="message"
+                                  type="text"></b-form-input>
+                  </b-col>
+
+                  <b-col sm="2" class="text-sm-left text-center" mt-sm-0 mt-2>
+                    <b-button @click="sendOrder('message')">
+                      Send
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-container>
+            </b-tab>
+          </b-tabs>
+        </b-card>
       </div>
 
-      <video id="remote_video" muted autoplay playsinline/>
     </div>
   </div>
 </template>
@@ -39,18 +208,30 @@
 <script>
 import Peer from 'skyway-js'
 
+//todo:レイアウトを調整(スマホ意識)
+
 export default {
   middleware: 'authenticated',
-  data () {
+  data() {
     return {
       peer: null,
       peerId: process.env.peerId,
       peersList: [],
-      targetId: '',
+      targetId: 'jetcam',
       message: '',
       mediaConnection: null,
       dataConnection: null,
-      remoteStream: null
+      remoteStream: null,
+      lego: {
+        move: "",
+        power: 0,
+        time: 0
+      },
+      ope: {
+        pan: 0,
+        pedestal: 0,
+        tilt: 0
+      }
     }
   },
 
@@ -64,11 +245,11 @@ export default {
   },
 
   methods: {
-    setPartner (partner_id) {
+    setPartner(partner_id) {
       this.targetId = partner_id
 
     },
-    establish () {
+    establish() {
       this.peer = new Peer(this.peerId, {
         key: this.skywayKey,
         debug: 3
@@ -88,7 +269,13 @@ export default {
       })
     },
 
-    callOn () {
+    callOn() {
+      if (this.mediaConnection) {
+        console.log('すでに接続しています。')
+        return
+      }
+
+
       this.remoteStream = document.getElementById('remote_video')
 
       //media streamの接続
@@ -121,18 +308,99 @@ export default {
       })
     },
 
-    callOff () {
+    callOff() {
       this.peer.destroy()
       this.peer = null
 
       this.targetId = ''
+      console.log('全て切断しました。')
     },
 
-    sendMessage () {
-      console.log(this.message)
-      this.dataConnection.send(this.message)
-    }
+    setModule(module) {
+      if (this.lego.move === module) {
+        this.lego.move = ''
+      } else {
+
+        this.lego.move = module
+      }
+    },
+
+    optimizeValue(module) {
+      this.lego.move = module
+
+      //非常停止
+      if (this.lego.move === 'stop') {
+        this.sendOrder()
+        return
+      }
+
+      let value = this.ope[module]
+      let plusMinus = 1
+
+      //+-を確認
+      if (value === 0) {
+        return
+      } else if (value < 0) {
+        plusMinus = -1
+        value = Math.abs(value)
+      }
+
+      //挙動の調整
+      if (value < 40) {
+        this.lego.power = plusMinus
+        this.lego.time = value / 10
+
+      } else if (40 <= value && value < 70) {
+        this.lego.power = 3 * plusMinus
+        this.lego.time = value / 15
+
+      } else if (70 <= value) {
+        this.lego.power = 9 * plusMinus
+        this.lego.time = value / 20
+
+      }
+
+      // pedestal、tilt 動きと値が正負逆なので調整
+      if (['pedestal', 'tilt'].includes(module)) {
+        this.lego.power = this.lego.power * -1
+      }
+
+      this.sendOrder(module)
+    },
+
+    sendOrder(module = null) {
+      if (!this.dataConnection) {
+        console.log('データコネクションが接続されていません')
+        return
+      }
+
+      if (module === 'message') {
+        let data = {
+          message: this.message
+        }
+
+        this.dataConnection.send(JSON.stringify(data))
+        this.message = ''
+        return
+      }
+
+      let data = {
+        lego: this.lego
+      }
+
+      this.dataConnection.send(JSON.stringify(data))
+
+      //初期化
+      this.lego.move = ""
+      this.lego.power = 0
+      this.lego.time = 0
+      if (module) {
+        this.ope[module] = 0
+      }
+    },
+
   }
+
 }
 </script>
 
