@@ -208,7 +208,6 @@
 <script>
 import Peer from 'skyway-js'
 
-//todo:レイアウトを調整(スマホ意識)
 
 export default {
   middleware: 'authenticated',
