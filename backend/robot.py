@@ -11,7 +11,7 @@ class Robot:
     """
 
     def __init__(self):
-        self.PNO = 21
+        self.PNO = 17
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.PNO, GPIO.OUT)
 
